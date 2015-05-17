@@ -1,0 +1,88 @@
+﻿@using Budgeteerv1.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Log in";
+    Layout = "~/Views/Shared/_LandingLayout.cshtml";
+}
+
+
+
+
+<div class="masthead">
+
+    <div class="container">
+        <h1 class="masthead-subtitle">
+            Login Social
+        </h1>
+
+    </div> <!-- /.container -->
+</div> <!-- /.masthead -->
+
+
+        <hr class="spacer-sm">
+        <div class="account-wrapper">
+            <div class="account-body">
+                <h3>Welcome back to MVP Ready.</h3>
+                <h5>Please sign in to get access.</h5>
+                <br>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <a href="javascript:;" class="btn btn-twitter btn-block">
+                            <i class="fa fa-twitter"></i>
+                            &nbsp;&nbsp;Login with Twitter
+                        </a>
+                    </div> <!-- /.col -->
+                    <div class="col-sm-6">
+                        <a href="javascript:;" class="btn btn-facebook btn-block">
+                            <i class="fa fa-facebook"></i>
+                            &nbsp;&nbsp;Login with Facebook
+                        </a>
+                    </div> <!-- /.col -->
+                </div> <!-- /.row -->
+                <span class="account-or-social text-muted">OR, SIGN IN BELOW</span>
+
+                @using (Html.BeginForm("Login","Account", new{ReturnUrl = ViewBag.ReturnUrl}, FormMethod.Post, new{ @class="form account-form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class="text-danger"})
+                    <div class="form-group">                        
+                        @Html.LabelFor(m => m.Email, new { @class="placeholder-hidden"})
+                        @Html.TextBoxFor(m => m.Email, new { @class="form-control",placeholder="Username/Email",id="login-username",tabindex="1"})
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class="text-danger"})                        
+                    </div> <!-- /.form-group -->
+                    <div class="form-group">
+                        @Html.LabelFor(p => p.Password, new { @class="placeholder-hidden"})
+                        @Html.PasswordFor(p => p.Password, new { @class="form-control",placeholder="Password",tabindex="2",id="login-password"})                        
+                        @Html.ValidationMessageFor(p => p.Password, "", new { @class="text-danger"})
+                    </div> <!-- /.form-group -->
+                    <div class="form-group clearfix">
+                        <div class="pull-left">
+                            <label class="checkbox-inline">                                
+                                @Html.CheckBoxFor(m => m.RememberMe, new {@tabindex="3"})
+                                @Html.LabelFor(m => m.RememberMe)
+                            </label>
+                        </div>
+                        <div class="pull-right">
+                            <small><a href="@Url.Action("ForgotPassword","Account")">Forgot Password?</a></small>
+                        </div>
+                    </div> <!-- /.form-group -->
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block btn-lg" tabindex="4" value="Log in">Signin &nbsp; <i class="fa fa-play-circle"></i></button>
+                    </div> <!-- /.form-group -->
+                }
+
+            </div> <!-- /.account-body -->
+            <div class="account-footer">
+                <p>
+                    Don't have an account? &nbsp;
+                    <a href="@Url.Action("Register","Account")" class="">Create an Account!</a>
+                </p>
+            </div> <!-- /.account-footer -->
+        </div> <!-- /.account-wrapper -->
+
+        <br><br><br>
+
+
+        @*@section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }*@

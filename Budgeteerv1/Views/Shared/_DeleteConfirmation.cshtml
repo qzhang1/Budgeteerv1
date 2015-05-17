@@ -1,0 +1,28 @@
+﻿@model Budgeteerv1.Models.Account
+<!--delete account modal-->
+@using (Html.BeginForm("Delete", "HouseAccount", new { accountid = Model.Id }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div id="DeleteAccount" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dissmiss="modal" aria-hidden="true">&times;</button>
+                    <h2 class="modal-title">Delete</h2>
+                </div>
+
+                <div class="modal-body">
+                    <span class="fa fa-exclamation-triangle fa-3x"></span>
+                    <!--Fields: Yes or Cancel similar to leave household-->
+                    <h4>Are you sure you want to Delete this Account and all its corresponding transactions? </h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dissmiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+<!--delete account modal end-->

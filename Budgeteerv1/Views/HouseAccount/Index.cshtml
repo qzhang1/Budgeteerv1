@@ -1,0 +1,107 @@
+﻿@model Budgeteerv1.Models.HouseholdAccountViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container">
+    @Html.HiddenFor(a => a.Householdid)
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Accounts</h2>
+            <p>
+                <a href="#CreateAccount" class="btn btn-secondary" data-toggle="modal">Create New</a>
+            </p>
+        </div>
+    </div>
+
+    <!--Create Account Form-->
+    <div id="CreateAccount" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dissmiss="modal" aria-hidden="true">&times;</button>
+                    <h2 class="modal-title">Create</h2>
+                </div>
+                <div class="modal-body">
+                    <!--Fields: Name, Balance-->                         
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    @using (Html.BeginForm("Create", "HouseAccount", FormMethod.Post, htmlAttributes: new { @class = "form parsley-form" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.HiddenFor(m => m.Householdid)
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            @Html.LabelFor(m => m.Account.Name, htmlAttributes: new { @class = "control-label" })
+                                            @Html.TextBoxFor(m => m.Account.Name, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.Account.Name, "", new { @class = "text-danger" })
+                                        </div>
+                                        <!--$$$Balance-->
+                                        <div class="form-group">
+                                            @Html.LabelFor(m => m.Account.Balance, htmlAttributes: new { @class = "control-label" })
+                                            @Html.TextBoxFor(m => m.Account.Balance, htmlAttributes: new { @class = "form-control", id = "balance" })                                                                                       
+                                            @Html.ValidationMessageFor(m => m.Account.Balance, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-secondary">Create</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">        
+        <div class="col-sm-12">
+            <table class="table table-bordered" cellspacing="0" width="100%" id="AccountTable">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Balance</th>
+                        <th>Reconciled</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var account in Model.Accounts)
+                    {
+                        <tr>
+                            <td>@account.Name</td>
+                            <td>$@account.Balance</td>
+                            <td>
+                                @if (account.Reconciled == 0)
+                                {
+                                    <span class="fa fa-check-square-o"></span>
+                                }
+                                else
+                                {
+                                    <span class="fa fa-square-o"></span>
+                                }
+                            </td>
+                            <td>
+                                <a href="#" class="fa fa-search-plus fa-2x" title="View"></a>
+                                <a href="#" class="fa fa-pencil fa-2x" title="Edit"></a>
+                                <a href="@Url.Action("routeDeleteConfirmation", new { accountId = account.Id})" class="fa fa-trash fa-2x" title="Delete"></a>                                
+                                @Html.Partial("_DeleteConfirmation",account)
+                            </td>
+                        </tr>
+                    }
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script src="/Scripts/accounting.js"></script>
+<script type="text/javascript">
+    //$(function () {
+    //    $("#balance").(function (e) {
+    //        $(this).val(accounting.formatMoney($(this).val()));
+    //    });
+    //});
+</script>
+}
