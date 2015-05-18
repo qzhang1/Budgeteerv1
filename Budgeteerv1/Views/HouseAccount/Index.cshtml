@@ -13,7 +13,7 @@
             </p>
         </div>
     </div>
-
+    <!--CREATE-->
     <!--Create Account Form-->
     <div id="CreateAccount" class="modal fade">
         <div class="modal-dialog">
@@ -33,13 +33,13 @@
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                         <div class="form-group">
                                             @Html.LabelFor(m => m.Account.Name, htmlAttributes: new { @class = "control-label" })
-                                            @Html.TextBoxFor(m => m.Account.Name, new { @class = "form-control" })
+                                            @Html.TextBoxFor(m => m.Account.Name, new { @class = "form-control",placeholder = "Account Name" })
                                             @Html.ValidationMessageFor(m => m.Account.Name, "", new { @class = "text-danger" })
                                         </div>
                                         <!--$$$Balance-->
                                         <div class="form-group">
                                             @Html.LabelFor(m => m.Account.Balance, htmlAttributes: new { @class = "control-label" })
-                                            @Html.TextBoxFor(m => m.Account.Balance, htmlAttributes: new { @class = "form-control", id = "balance" })                                                                                       
+                                            @Html.TextBoxFor(m => m.Account.Balance, htmlAttributes: new { @class = "form-control", id = "balance", placeholder = "Initial Balance" })                                                                                       
                                             @Html.ValidationMessageFor(m => m.Account.Balance, "", new { @class = "text-danger" })
                                         </div>
                                         <div class="form-group">
@@ -82,9 +82,31 @@
                             </td>
                             <td>
                                 <a href="#" class="fa fa-search-plus fa-2x" title="View"></a>
-                                <a href="#" class="fa fa-pencil fa-2x" title="Edit"></a>
-                                <a href="@Url.Action("routeDeleteConfirmation", new { accountId = account.Id})" class="fa fa-trash fa-2x" title="Delete"></a>                                
-                                @Html.Partial("_DeleteConfirmation",account)
+                                <a data-target="#edit-@account.Id" class="fa fa-pencil fa-2x" title="Edit"></a>
+                                <a data-toggle="modal" data-target="#delete-@account.Id"><span class="fa fa-trash fa-2x"></span></a>       
+                                <div class="modal fade" id="delete-@account.Id" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">Delete Account</h4>
+                                            </div>
+                                            @using (Html.BeginForm("Delete","HouseAccount", new{accountid = account.Id, householdid = Model.Householdid}))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <div class="modal-body">
+                                                    <span class="fa fa-exclamation-triangle fa-3x"></span>
+                                                    <!--Fields: Yes or Cancel similar to leave household-->
+                                                    <h4>Are you sure you want to Delete this Account and all its corresponding transactions? </h4>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dissmiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Yes</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     }

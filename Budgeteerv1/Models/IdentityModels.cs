@@ -32,6 +32,11 @@ namespace Budgeteerv1.Models
         {
         }
 
+        //public ApplicationDbContext()
+        //    : base("AzureConnection", throwIfV1Schema: false)
+        //{
+        //}
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
