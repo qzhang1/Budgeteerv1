@@ -6,6 +6,10 @@ using System.Web.Mvc;
 using Budgeteerv1.Models;
 using Microsoft.AspNet.Identity;
 using System.Net;
+using Budgeteerv1.Models.helper;
+using Budgeteerv1.Models.extensions;
+using Budgeteerv1.Models.CustomAttributes;
+using System.Threading.Tasks;
 
 namespace Budgeteerv1.Controllers
 {
@@ -14,7 +18,7 @@ namespace Budgeteerv1.Controllers
     public class HouseHoldController : Controller
     {
         ApplicationDbContext db = new ApplicationDbContext();
-
+        householdHelpers helper = new householdHelpers();
 
         // GET: HouseHold
         public ActionResult Index(int id)
@@ -44,56 +48,101 @@ namespace Budgeteerv1.Controllers
             {
                 //if current user creates a household let them automatically join the household
                 var userId = User.Identity.GetUserId();
-
-                model.Users.Add(db.Users.Find(userId));
+                model.Users.Add(db.Users.Find(userId));                
+                model.IsDeleted = false;
                 db.HouseHolds.Add(model);
                 db.SaveChanges();
+
+                //add default category(s)
+                helper.AddCategory(model.Id, "Adjustment");
+
                 return RedirectToAction("Index", "Dashboard");
             }
             return View(model);
         }
 
-        //public ActionResult LeaveHousehold(int id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    HouseHold hh = db.HouseHolds.Find(id);
-        //    if (hh == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    if(hh.Users.Count == 1)
-        //    {
-        //        ViewBag.lastmember = "You are the last member of household " + hh.Name + " are you sure you wish to leave?";
-        //    }
-        //    return View("LeaveConfirmation");
+        //Ajax form
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RequireHousehold]
+        public ActionResult Invite(ApplicationUser model)
+        {
+            if(ModelState.IsValid)
+            {
+                var userId = User.Identity.GetUserId();
+                var user = db.Users.Find(userId);
 
-        //}
+                var note = new Notification
+                {
+                    ReceiverId = db.Users.FirstOrDefault(u => u.Email == model.Email).Id,
+                    Created = System.DateTime.Now,
+                    Message = user.DisplayName + " has invited you to Household " + user.HouseHold.Name + ".",
+                    HouseholdId = model.HouseHoldId,
+                    Name = "Invite"
+                };
+                db.Notifications.Add(note);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index", "Dashboard");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult LeaveConfirm(string userid, int? householdid)
+        public ActionResult Join(int noteId, int? householdId)
         {
-            //set user householdId to null if user is the last user then "delete" the household         
+            if(ModelState.IsValid)
+            {
+                var userId = User.Identity.GetUserId();
+                var user = db.Users.Find(userId);
+                if(user.HouseHoldId != null)
+                {
+                    ViewBag.ErrorMsg = "You are already in a Household. You can't join another Household until you leave the current Household.";
+                    return RedirectToAction("Index", "Dashboard");
+                }
+                var household = db.HouseHolds.Find(householdId);
+                if(household != null)
+                {
+                    //if user is not already in a household and the household they are
+                    //joining exists then add user to the household and delete the notification
+                    household.Users.Add(user);
+                    db.Notifications.Remove(db.Notifications.Find(noteId));
+                    db.SaveChanges();
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
+            }
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [RequireHousehold]
+        public async Task<ActionResult> LeaveConfirm(string userid, int? householdid)
+        {
+            //set all "user" references to the household to null and toggle IsDeleted to true  if the user leaving is the Last user  
+            //all the other connections to household like budgetitem,accounts,and categories should stay except users
             var household = db.HouseHolds.Find(householdid);
+            var user = db.Users.Find(userid);
             if (household.Users.Count == 1)
             {
-                //remove household reference and delete household
-                var user = db.Users.Find(userid);
+                //remove household references and toggle IsDeleted                
                 user.HouseHoldId = null;
-                db.HouseHolds.Remove(household);
+                household.IsDeleted = true;
+                db.Entry(user).Property("HouseHoldId").IsModified = true;
                 db.SaveChanges();
             }
             else
             {
-                //just remove household reference
-                var user = db.Users.Find(userid);
+                //just remove household reference               
                 user.HouseHoldId = null;
+                db.Entry(user).Property("HouseHoldId").IsModified = true;
+                db.SaveChanges();
             }
 
+            await ControllerContext.HttpContext.RefreshAuthentication(user);
             return RedirectToAction("Index","Dashboard");
         }
 

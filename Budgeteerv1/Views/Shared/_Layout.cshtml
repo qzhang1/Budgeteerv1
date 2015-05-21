@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    @Styles.Render("~/Content/css")
+    @Styles.Render("~/bundles/css")
     @Scripts.Render("~/bundles/modernizr")
     
     <!-- Google Font: Open Sans -->
@@ -14,6 +14,8 @@
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="/Content/font-awesome.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    @RenderSection("css", required: false)
 
     <!-- App CSS -->
     <link rel="stylesheet" href="/Content/mvpready-admin.css">
@@ -31,7 +33,7 @@
                         <i class="fa fa-cog"></i>
                     </button>
                     <a href="@Url.Action("Index","Dashboard")" class="navbar-brand navbar-brand-img">
-                        <img src="/Images/dashlogo.png" alt="MVP Ready">
+                        <img src="~/Images/financialportallogo.png" alt="MVP Ready">
                     </a>
                 </div> <!-- /.navbar-header -->
                 <nav class="collapse navbar-collapse" role="navigation">
@@ -137,36 +139,20 @@
                         </li>
                         <li class="dropdown navbar-profile">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:;">
-                                <img src="../../global/img/avatars/avatar-4-sm.jpg" class="navbar-profile-avatar" alt="">
+                                <img src="http://placehold.it/50x50" class="navbar-profile-avatar" alt="">
                                 <span class="visible-xs-inline">Qi Zhang &nbsp;</span>
                                 <i class="fa fa-caret-down"></i>
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li>
-                                    <a href="./page-profile.html">
+                                    <a href="@Url.Action("ProfileSettings","Dashboard")">
                                         <i class="fa fa-user"></i>
                                         &nbsp;&nbsp;My Profile
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="./page-pricing.html">
-                                        <i class="fa fa-dollar"></i>
-                                        &nbsp;&nbsp;Plans & Billing
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./page-settings.html">
-                                        <i class="fa fa-cogs"></i>
-                                        &nbsp;&nbsp;Settings
-                                    </a>
-                                </li>
+                                
                                 <li class="divider"></li>
-                                <li>
-                                    <a href="./account-login.html">
-                                        <i class="fa fa-sign-out"></i>
-                                        &nbsp;&nbsp;Logout
-                                    </a>
-                                </li>
+                                @Html.Partial("_DashboardLoginPartial")
                             </ul>
                         </li>
                     </ul>
@@ -416,8 +402,6 @@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
     <!-- Plugin JS -->
-    <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
-    <script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
     <script src="/Scripts/excanvas.min.js"></script>
     <script src="/Scripts/jquery.flot.js"></script>
     <script src="/Scripts/jquery.flot.pie.js"></script>
@@ -431,10 +415,10 @@
     <script src="/Scripts/mvpready-helpers.js"></script>
     <script src="/Scripts/mvpready-admin.js"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#AccountTable').DataTable({});            
-        })
-    </script>
+    
+    @RenderSection("page",required: false)
+        
+    
+
 </body>
 </html>

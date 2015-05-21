@@ -7,6 +7,7 @@ namespace Budgeteerv1.Models
 {
     public class HouseHold
     {
+        ApplicationDbContext db = new ApplicationDbContext();
         public HouseHold()
         {
             this.Users = new HashSet<ApplicationUser>();
@@ -17,11 +18,12 @@ namespace Budgeteerv1.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool IsDeleted { get; set; }
 
         public virtual ICollection<ApplicationUser> Users { get; set; }
         public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<BudgetItem> Budgets { get; set; }
-        public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }        
         
     }
 }

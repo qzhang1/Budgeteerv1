@@ -13,14 +13,26 @@ namespace Budgeteerv1.Models
             this.Transactions = new HashSet<Transaction>();
         }
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
         [DataType(DataType.Currency)]
         public decimal Balance { get; set; }
         public decimal Reconciled { get; set; }
 
-        public int? HouseHoldId { get; set; }
+        public int HouseHoldId { get; set; }
 
         public virtual HouseHold HouseHold { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
+
+        public bool is_overdraft(Account model)
+        {
+            if(model.Balance < 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
+
+
 }

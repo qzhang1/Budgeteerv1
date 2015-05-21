@@ -35,30 +35,7 @@ namespace Budgeteerv1.Migrations
             else
             {
                 User0 = context.Users.Single(u => u.Email == "qzhang112@gmail.com");
-            }
-
-
-            //Create Categories
-            if(!context.Categories.Any(cg => cg.Name == "Bills"))
-            {
-                Category Bills = new Category
-                {
-                    Name = "Bills",
-                    Id = 1
-                };
-                context.Categories.Add(Bills);
-            }
-            if (!context.Categories.Any(cg => cg.Name == "Salary"))
-            {
-                Category Salary = new Category
-                {
-                    Name = "Salary",
-                    Id = 2
-                };
-                context.Categories.Add(Salary);
-            }
-
-            //Create HouseHold
+            }            
 
 
         }

@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_LandingLayout.cshtml";
+}
+
+<div class="masthead">
+    <!--Start Carousel-->
+    <div id="masthead-carousel" class="carousel slide carousel-fade masthead-carousel">
+        <div class="carousel-inner">
+            
+            <div class="item active" style="height: 775px; background-color: #354b5e; background-image: url(/Images/shattered.png);">
+                <hr class="spacer-md hidden-xs">
+                <hr class="spacer-sm visible-xs">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-md-10 col-md-offset-1 masthead-text text-center animated fadeIn">
+                            <h2 class="masthead-title">Create an Awesome, Engaging Landing Page for Your Next Project!</h2>
+                            <div class="masthead-actions">
+                                <a href="javascript:;" class="btn btn-transparent btn-jumbo">
+                                    Take a Tour
+                                </a>
+                                <a href="@Url.Action("Index","Dashboard")" class="btn btn-primary btn-jumbo">
+                                    Get Started Today
+                                </a>
+                            </div> <!-- /.masthead-actions -->
+
+                            <hr class="spacer-sm">
+                            <hr class="spacer-xs">
+                        </div> <!-- /.masthead-text -->
+                        <div class="col-md-12 masthead-img animated fadeInUpBig">
+                            <img src="/Images/browser.png" alt="slide2" class="img-responsive" />
+                        </div> <!-- /.masthead-img -->
+                    </div> <!-- /.row -->
+                </div> <!-- /.container -->
+            </div> <!-- /.item -->
+                        
+        </div>  <!-- /.carousel-inner -->
+        <!-- Carousel nav -->
+    </div>
+</div>
+
+<div class="content">
+    <section id="section-features" class="home-section">
+        <div class="container">
+            <div class="heading-block heading-minimal heading-center">
+                <h1>
+                    Why Choose MVP Ready?
+                </h1>
+            </div> <!-- /.heading-block -->
+
+
+            <div class="feature-lg">
+                <div class="row">
+
+                    <div class="col-sm-6">
+                        <hr class="spacer-sm">
+                        <figure class="feature-figure"><img src="~/Images/product01.png" class="img-responsive" alt=""></figure>
+                    </div><!-- /.col -->
+
+                    <div class="col-sm-6">
+                        <div class="feature-content">
+                            <h5>Consent accullignis dentibea.</h5>
+                            <h3>Fully flexible user interface</h3>
+                            <p>Magnis modipsae que lib voloratati andigen daepeditem quiate ut reporemni aut labor. Laceaque quiae sitiorem rest non restibusaes es tumquam core posae volor remped.</p>
+                            <ul class="icons-list">
+                                <li>
+                                    <i class="icon-li fa fa-check text-primary"></i>
+                                    Voloratati andigen daepeditem quiate
+                                </li>
+                                <li>
+                                    <i class="icon-li fa fa-check text-primary"></i>
+                                    Laceaque quiae sitiorem
+                                </li>
+                                <li>
+                                    <i class="icon-li fa fa-check text-primary"></i>
+                                    Tumquam core posae
+                                </li>
+                            </ul>
+                            <a href="#" class="btn btn-default">Check out the functions</a>
+                        </div> <!-- /.feature-content -->
+                    </div><!-- /.col -->
+
+                </div> <!-- /.row -->
+            </div> <!-- /.feature-lg -->
+        </div>
+    </section>
+
+    <section id="section-contact" class="home-section" style="background-color: #f3f3f3;">
+        <div class="container">
+            <div class="heading-block heading-minimal heading-center">
+                <h1>
+                    Want to work with us?
+                </h1>
+            </div> <!-- /.heading-block -->
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <p class="text-center text-xl">
+                        <em>Magnis modipsae que voloratati andigen daepeditem quiate re porem aut labor. Laceaque quiae sitiorem rest.</em>
+                        <br><br>
+                        <a href="./page-contact.html" class="btn btn-primary btn-lg">Get In Touch</a>
+                    </p>
+                </div>
+            </div>
+            <br><br>
+        </div> <!-- /.container -->
+    </section>
+</div> <!-- /.content -->

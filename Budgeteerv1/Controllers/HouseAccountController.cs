@@ -4,18 +4,24 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Budgeteerv1.Models;
+using Budgeteerv1.Models.CustomAttributes;
 using Microsoft.AspNet.Identity;
 using System.Net;
 
 namespace Budgeteerv1.Controllers
 {
+    [RequireHousehold]
     public class HouseAccountController : Controller
     {
         ApplicationDbContext db = new ApplicationDbContext();
         
         // GET: HouseAccount
-        public ActionResult Index(int? householdid)
+        public ActionResult Index(int householdid)
         {
+            if(householdid == 0)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
             var model = new HouseholdAccountViewModel
             {
                 Accounts = db.Accounts.Where(a => a.HouseHoldId == householdid).ToList(),
@@ -33,6 +39,21 @@ namespace Budgeteerv1.Controllers
             if(ModelState.IsValid)
             {
                 model.Account.HouseHoldId = model.Householdid;
+                if (model.Account.Balance > 0)
+                {
+                    //if initial balance is greater than 0 create a transaction
+                    //within transaction reference the transaction to the "adjustment" category
+                    var transaction = new Transaction
+                    {
+                        Amount = model.Account.Balance,
+                        Created = System.DateTime.Now,
+                        Description = "Initial Account Deposit",
+                        Reconciled = 0,                        
+                        CategoryId = db.HouseHolds.Find(model.Householdid).Categories.FirstOrDefault(f => f.Name == "Adjustment").Id,
+                        UpdatedById = User.Identity.GetUserId()
+                    };
+                    model.Account.Transactions.Add(transaction);
+                }
                 db.Accounts.Add(model.Account);
                 db.SaveChanges();                
             }
@@ -40,17 +61,25 @@ namespace Budgeteerv1.Controllers
         }
 
 
-        public ActionResult routeDeleteConfirmation(int accountId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult Edit(HouseholdAccountViewModel model, int accountId)
         {
-            var account = db.Accounts.Find(accountId);
-            return PartialView("_DeleteConfirmation", account);
+            if(ModelState.IsValid)
+            {
+                var account = db.Accounts.Find(accountId);
+                account.Name = model.Account.Name;
+                db.Entry(account).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index", new { householdid = model.Householdid });
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Delete(int accountid, int? householdid)
+        public ActionResult Delete(int accountid, int householdid)
         {            
             var account = db.Accounts.Find(accountid);
             if(account == null)

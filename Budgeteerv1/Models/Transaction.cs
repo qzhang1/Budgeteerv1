@@ -15,10 +15,12 @@ namespace Budgeteerv1.Models
         public decimal Reconciled { get; set; }
         public bool IsIncome { get; set; }
 
+        public string UpdatedById { get; set; }
         public int AccountId { get; set; }
         public int? CategoryId { get; set; }
 
         public virtual Account  Account { get; set; }
         public virtual Category Category { get; set; }
+        public virtual ApplicationUser UpdatedBy { get; set; }
     }
 }

@@ -1,0 +1,159 @@
+﻿@model Budgeteerv1.Models.HouseholdAccountViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container">
+    @Html.HiddenFor(a => a.Householdid)
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Accounts</h2>
+            <p>
+                <a href="#CreateAccount" class="btn btn-secondary" data-toggle="modal">Create New</a>
+            </p>
+        </div>
+    </div>
+    <!--CREATE-->
+    <!--Create Account Form-->
+    <div id="CreateAccount" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h2 class="modal-title">Create</h2>
+                </div>
+                <div class="modal-body">
+                    <!--Fields: Name, Balance-->                         
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    @using (Html.BeginForm("Create", "HouseAccount", FormMethod.Post, htmlAttributes: new { @class = "form parsley-form" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.HiddenFor(m => m.Householdid)
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            @Html.LabelFor(m => m.Account.Name, htmlAttributes: new { @class = "control-label" })
+                                            @Html.TextBoxFor(m => m.Account.Name, new { @class = "form-control",placeholder = "Account Name" })
+                                            @Html.ValidationMessageFor(m => m.Account.Name, "", new { @class = "text-danger" })
+                                        </div>
+                                        <!--$$$Balance-->
+                                        <div class="form-group">
+                                            @Html.LabelFor(m => m.Account.Balance, htmlAttributes: new { @class = "control-label" })
+                                            @Html.TextBoxFor(m => m.Account.Balance, htmlAttributes: new { @class = "form-control", id = "balance", placeholder = "Initial Balance" })                                                                                       
+                                            @Html.ValidationMessageFor(m => m.Account.Balance, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-facebook">Create</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">        
+        <div class="col-sm-12">
+            <table class="table table-bordered" cellspacing="0" width="100%" id="AccountTable">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Balance</th>
+                        <th>Reconciled</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var account in Model.Accounts)
+                    {
+                        <tr>
+                            <td>@account.Name</td>
+                            <td>                                
+                                $@account.Balance</td>
+                            <td>
+                                @if (account.Reconciled == 0)
+                                {
+                                    <span class="fa fa-check-square-o"></span>
+                                }
+                                else
+                                {
+                                    <span class="fa fa-square-o"></span>
+                                }
+                            </td>
+                            <td>                                
+                                <a data-target="#edit-@account.Id" class="fa fa-pencil fa-2x" title="Edit" data-toggle="modal"></a>
+                                <!--Edit Modal Start-->
+                                <div class="modal fade" id="edit-@account.Id" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">Edit Account Name &nbsp; <span class="fa fa-pencil fa-2x"></span></h4>
+                                            </div>
+                                            @using (Html.BeginForm("Edit", "HouseAccount", new {accountId = account.Id }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                @Html.HiddenFor(m => m.Householdid)
+                                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                <div class="modal-body">                                                    
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(m => m.Account.Name, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.TextBoxFor(m => m.Account.Name, new { @class = "form-control", placeholder = "Account Name" })
+                                                        @Html.ValidationMessageFor(m => m.Account.Name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Save</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Edit Modal End-->
+                                <a data-toggle="modal" data-target="#delete-@account.Id"><span class="fa fa-trash fa-2x"></span></a>                                
+                                <!--Delete Modal Start-->       
+                                <div class="modal fade" id="delete-@account.Id" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">Delete Account &nbsp; <span class="fa fa-exclamation-triangle fa-2x"></span></h4>
+                                            </div>
+                                            @using (Html.BeginForm("Delete","HouseAccount", new{accountid = account.Id, householdid = Model.Householdid}))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <div class="modal-body">
+                                                    
+                                                    <!--Fields: Yes or Cancel similar to leave household-->
+                                                    <h4>Are you sure you want to Delete this Account and all its corresponding transactions? </h4>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-facebook" data-dismiss="modal" aria-hidden="true">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Yes</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Delete Modal End-->
+                            </td>
+                        </tr>
+                    }
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script src="/Scripts/accounting.js"></script>
+<script type="text/javascript">
+    //$(function () {
+    //    $("#balance").(function (e) {
+    //        $(this).val(accounting.formatMoney($(this).val()));
+    //    });
+    //});
+</script>
+}

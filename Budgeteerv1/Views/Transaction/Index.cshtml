@@ -1,0 +1,142 @@
+﻿@model Budgeteerv1.Models.TransactionViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+
+@section css
+{
+    <!--Datatables-->
+    <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" />
+    <!--UI-->
+    <link rel="stylesheet" href="/Content/jquery-ui.css" />
+    <link rel="stylesheet" href="/Content/jquery-ui.structure.css" />
+    <link rel="stylesheet" href="/Content/jquery-ui.theme.css" />
+}
+
+<div class="container" >
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Transactions</h2>
+            <p>
+                <a href="#CreateAccount" class="btn btn-secondary" data-toggle="modal">
+                    <span class="fa fa-plus"></span>
+                    &nbsp;Create New
+                </a>
+            </p>
+        </div>
+    </div>
+    <!--CREATE-->
+    <!--Create Transaction Form-->
+    <div id="CreateAccount" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h2 class="modal-title">Create Transaction</h2>
+                </div>
+                <div class="modal-body">
+                    <!--Fields: Name, Balance-->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            @using (Html.BeginForm())
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                
+                                <!--Description-->
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Description, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.Transaction.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Transaction.Description, "", new { @class = "text-danger" })
+                                </div>
+                                <!--Amount. +/- -->
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Amount, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.Transaction.Amount, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Transaction.Amount, "", new { @class = "text-danger" })
+                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, true, new { @class = ""}) +
+                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, false) -
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Reconciled, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.Transaction.Reconciled, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Transaction.Reconciled, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="ui-widget">
+                                        @Html.LabelFor(m => m.Transaction.Category, "Category", htmlAttributes: new { @class = "control-label" })
+
+                                        @Html.DropDownList("Categories", null, htmlAttributes: new { @class = "form-control", id = "categories" })
+                                        @Html.ValidationMessageFor(m => m.Transaction.Category, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped table-bordered table-hover" cellspacing="0" width="100%" id="TransactionTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Reconciled</th>
+                        <th>Updated By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@t.Created</td>
+                            <td>
+                                @t.Description
+                            </td>
+                            <td>
+                                @t.Category.Name
+                            </td>
+                            <td>
+                                @t.Amount
+                            </td>
+                            <td>
+                                @if(t.Reconciled == 0)
+                                {
+                                    <span class="fa fa-check-square-o"></span>
+                                }
+                                else
+                                {
+                                    @t.Reconciled
+                                }
+                            </td>
+                            <td>
+                                @t.UpdatedBy.DisplayName
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section page{
+    <script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+    <script src="/Scripts/jquery-ui.min.js"></script>
+    
+    <script type="text/javascript">
+
+        $('#TransactionTable').DataTable();
+        $('#categories').combobox();
+    </script>
+}

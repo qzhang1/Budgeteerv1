@@ -55,8 +55,8 @@ namespace Budgeteerv1
             //   consumerSecret: "");
 
             //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            //   appId: "371514743047536",
+            //   appSecret: "8f0b0c331fea0cf585e0ee8c63be06dd");
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
