@@ -4,12 +4,13 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+<div data-household-id="@Model.HouseHoldId" id="arbitrary-data"></div>
 
 <div class="container">
     @if (ViewBag.ErrorMsg != null)
     {
         <div class="row">
-            <div class="alert alert-success" role="alert">@ViewBag.ErrorMsg</div>
+            <div class="alert alert-success" role="alert" id="invitationAlert" onclick="$('#invitationAlert').fadeOut();">@ViewBag.ErrorMsg</div>
         </div>
     }
     
@@ -17,7 +18,15 @@
         <div class="col-md-3 col-sm-5">
             <div class="profile-avatar">
                 <a href="#" title="Edit Profile Picture">
-                    <img src="http://placehold.it/263x263" class="profile-avatar-img img-responsive thumbnail" alt="Profile Image">
+                    @if (Model.ProfileUrl == null)
+                    {
+                        <img src="http://placehold.it/263x263" class="profile-avatar-img img-responsive thumbnail" alt="Profile Image">
+                    }
+                    else
+                    {
+                        <img src="@Model.ProfileUrl" class="profile-avatar-img img-responsive thumbnail" alt="Profile Image">
+                    }
+                    
                 </a>
             </div> <!-- /.profile-avatar -->
 
@@ -30,20 +39,13 @@
                     <i class="fa fa-chevron-right list-group-chevron"></i>
                     <span class="badge">@Model.HouseHold.Accounts.Count</span>
                 </a>                
-                <a href="javascript:;" class="list-group-item">
+                <a href="@Url.Action("Index","Budget",new{householdid = Model.HouseHoldId})" class="list-group-item">
                     <i class="fa fa-book text-primary"></i> &nbsp;&nbsp;Budget
 
                     <i class="fa fa-chevron-right list-group-chevron"></i>
-                    <span class="badge">@Model.HouseHold.Budgets.Count</span>
+                    <span class="badge bCount"></span>
                 </a>
-                <a href="javascript:;" class="list-group-item">
-                    <i class="fa fa-envelope text-primary"></i> &nbsp;&nbsp;Transactions
-
-                    <i class="fa fa-chevron-right list-group-chevron"></i>
-                </a>
-                
-
-                                    
+                              
                     <a href="#MembersModal" class="list-group-item" data-toggle="modal">
                         <i class="fa fa-group text-primary"></i> &nbsp;&nbsp;Members
 
@@ -174,8 +176,11 @@
                                             <td>
                                                 @using (Html.BeginForm("Join", "HouseHold", new { noteId = note.NotificationId, householdId = note.HouseholdId}))
                                                 {
-                                                    @Html.AntiForgeryToken()                                                                                                                                                                                                               
+                                                    @Html.AntiForgeryToken()       
+                                                                                                                                                                                                                                                                                                               
                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-user-plus"></i> &nbsp;Join</button>
+                                                    <br />                                                   
+                                                    <a href="@Url.Action("Decline", "HouseHold", new { noteId = note.NotificationId})" class="btn btn-warning"><i class="fa fa-user-times"></i> &nbsp;Decline</a>
                                                 }                                                 
                                             </td>
                                         </tr>
@@ -258,7 +263,9 @@
                 <li><i class="icon-li fa fa-map-marker"></i> Las Vegas, NV</li>
             </ul>
             <br>
-            <p></p>
+            <p>
+                @Model.Description
+            </p>
             <hr>
 
             <br><br>
@@ -456,13 +463,30 @@
     <br><br>
 </div> <!-- /.container -->
 
+@section page{
+    <script type="text/javascript">
+        function OnSuccess() {
+            alert("The Ajax Worked!");
+        }
 
-<script type="text/javascript">
-    function OnSuccess() {
-        alert("The Ajax Worked!");
-    }
+        function OnFailure() {
+            alert("The Ajax Failed!");
+        }
 
-    function OnFailure() {
-        alert("The Ajax Failed!");
-    }
-</script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/Dashboard/ItemCount',
+                dataType: 'json',
+                data: { householdId: $('#arbitrary-data').data('household-id') },
+                contentType: 'application/json',
+                success: function (data) {
+                    $('.bCount').html(data.BudgetCount);
+                }
+            });
+        });
+
+
+    </script>
+
+}

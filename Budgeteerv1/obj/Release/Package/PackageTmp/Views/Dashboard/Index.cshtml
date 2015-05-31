@@ -4,12 +4,13 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+<div data-household-id="@Model.HouseHoldId" id="arbitrary-data"></div>
 
 <div class="container">
     @if (ViewBag.ErrorMsg != null)
     {
         <div class="row">
-            <div class="alert alert-success" role="alert">@ViewBag.ErrorMsg</div>
+            <div class="alert alert-success" role="alert" id="invitationAlert" onclick="$('#invitationAlert').fadeOut();">@ViewBag.ErrorMsg</div>
         </div>
     }
     
@@ -30,16 +31,17 @@
                     <i class="fa fa-chevron-right list-group-chevron"></i>
                     <span class="badge">@Model.HouseHold.Accounts.Count</span>
                 </a>                
-                <a href="javascript:;" class="list-group-item">
+                <a href="@Url.Action("Index","Budget",new{householdid = Model.HouseHoldId})" class="list-group-item">
                     <i class="fa fa-book text-primary"></i> &nbsp;&nbsp;Budget
 
                     <i class="fa fa-chevron-right list-group-chevron"></i>
-                    <span class="badge">@Model.HouseHold.Budgets.Count</span>
+                    <span class="badge bCount"></span>
                 </a>
                 <a href="javascript:;" class="list-group-item">
                     <i class="fa fa-envelope text-primary"></i> &nbsp;&nbsp;Transactions
 
                     <i class="fa fa-chevron-right list-group-chevron"></i>
+                    <span class="badge tCount"></span>
                 </a>
                 
 
@@ -172,10 +174,13 @@
                                             <td>@note.Message</td>
                                             <td>@note.Created</td>
                                             <td>
-                                                @using (Html.BeginForm("Join", "HouseHold", new { householdId = note.HouseholdId}))
+                                                @using (Html.BeginForm("Join", "HouseHold", new { noteId = note.NotificationId, householdId = note.HouseholdId}))
                                                 {
-                                                    @Html.AntiForgeryToken()                                                                                                                                                           
+                                                    @Html.AntiForgeryToken()       
+                                                                                                                                                                                                                                                                                                               
                                                     <button type="submit" class="btn btn-primary"><i class="fa fa-user-plus"></i> &nbsp;Join</button>
+                                                    <br />                                                   
+                                                    <a href="@Url.Action("Decline", "HouseHold", new { noteId = note.NotificationId})" class="btn btn-warning"><i class="fa fa-user-times"></i> &nbsp;Decline</a>
                                                 }                                                 
                                             </td>
                                         </tr>
@@ -208,7 +213,7 @@
                             <h2 class="modal-title">Invitation</h2>
                         </div>
                         @using (Ajax.BeginForm("Invite", "HouseHold", new AjaxOptions { 
-                            LoadingElementId = "loader",
+                            LoadingElementId = "loader", OnSuccess = "$('#InviteUser').modal('hide');"
                         }))
                         {
                             @Html.AntiForgeryToken()
@@ -456,13 +461,31 @@
     <br><br>
 </div> <!-- /.container -->
 
+@section page{
+    <script type="text/javascript">
+        function OnSuccess() {
+            alert("The Ajax Worked!");
+        }
 
-<script type="text/javascript">
-    function OnSuccess() {
-        alert("The Ajax Worked!");
-    }
+        function OnFailure() {
+            alert("The Ajax Failed!");
+        }
 
-    function OnFailure() {
-        alert("The Ajax Failed!");
-    }
-</script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: '/Dashboard/ItemCount',
+                dataType: 'json',
+                data: { householdId: $('#arbitrary-data').data('household-id') },
+                contentType: 'application/json',
+                success: function (data) {
+                    $('.tCount').html(data.TransCount);
+                    $('.bCount').html(data.BudgetCount);
+                }
+            });
+        });
+
+
+    </script>
+
+}

@@ -50,10 +50,14 @@ namespace Budgeteerv1.Controllers
                         Description = "Initial Account Deposit",
                         Reconciled = 0,                        
                         CategoryId = db.HouseHolds.Find(model.Householdid).Categories.FirstOrDefault(f => f.Name == "Adjustment").Id,
-                        UpdatedById = User.Identity.GetUserId()
+                        UpdatedById = User.Identity.GetUserId(),
+                        AccountId = model.Account.Id,
+                        IsIncome = true,                        
                     };
+                    db.Transactions.Add(transaction);
                     model.Account.Transactions.Add(transaction);
-                }
+
+                }                
                 db.Accounts.Add(model.Account);
                 db.SaveChanges();                
             }
@@ -68,6 +72,7 @@ namespace Budgeteerv1.Controllers
         {
             if(ModelState.IsValid)
             {
+                
                 var account = db.Accounts.Find(accountId);
                 account.Name = model.Account.Name;
                 db.Entry(account).State = System.Data.Entity.EntityState.Modified;
@@ -103,5 +108,7 @@ namespace Budgeteerv1.Controllers
             db.SaveChanges();
             return RedirectToAction("Index","HouseAccount", new { householdid = householdid});
         }
+
+
     }
 }

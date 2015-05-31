@@ -15,6 +15,7 @@ namespace Budgeteerv1.Models
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
         [DataType(DataType.Currency)]
         public decimal Balance { get; set; }
         public decimal Reconciled { get; set; }
@@ -24,14 +25,7 @@ namespace Budgeteerv1.Models
         public virtual HouseHold HouseHold { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
 
-        public bool is_overdraft(Account model)
-        {
-            if(model.Balance < 0)
-            {
-                return true;
-            }
-            return false;
-        }
+        
     }
 
 

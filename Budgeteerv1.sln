@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgeteerv1", "Budgeteerv1\Budgeteerv1.csproj", "{BCB1F695-CCEB-4526-BC21-4D2D8CE5FF62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTables.Mvc", "..\..\..\Downloads\datatables.mvc-master\datatables.mvc-master\DataTables.Mvc\DataTables.Mvc.csproj", "{431ADB89-3DA0-4E18-9AF0-984B917E6EB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BCB1F695-CCEB-4526-BC21-4D2D8CE5FF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCB1F695-CCEB-4526-BC21-4D2D8CE5FF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCB1F695-CCEB-4526-BC21-4D2D8CE5FF62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{431ADB89-3DA0-4E18-9AF0-984B917E6EB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{431ADB89-3DA0-4E18-9AF0-984B917E6EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{431ADB89-3DA0-4E18-9AF0-984B917E6EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{431ADB89-3DA0-4E18-9AF0-984B917E6EB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

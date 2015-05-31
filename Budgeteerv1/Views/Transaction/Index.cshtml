@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/Content/jquery-ui.css" />
     <link rel="stylesheet" href="/Content/jquery-ui.structure.css" />
     <link rel="stylesheet" href="/Content/jquery-ui.theme.css" />
+    <link rel="stylesheet" href="~/Content/datepicker.css" />
 }
 
 <div class="container" >
@@ -23,7 +24,11 @@
                     <span class="fa fa-plus"></span>
                     &nbsp;Create New
                 </a>
+                <span class="pull-right">
+                    <strong>Account Balance</strong> @Model.Account.Balance
+                </span>
             </p>
+           
         </div>
     </div>
     <!--CREATE-->
@@ -39,7 +44,7 @@
                     <!--Fields: Name, Balance-->
                     <div class="row">
                         <div class="col-sm-12">
-                            @using (Html.BeginForm())
+                            @using (Html.BeginForm("Create", "Transaction", new {accountId = Model.AccountId }, FormMethod.Post))
                             {
                                 @Html.AntiForgeryToken()
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -55,8 +60,8 @@
                                     @Html.LabelFor(m => m.Transaction.Amount, htmlAttributes: new { @class = "control-label" })
                                     @Html.TextBoxFor(m => m.Transaction.Amount, new { @class = "form-control" })
                                     @Html.ValidationMessageFor(m => m.Transaction.Amount, "", new { @class = "text-danger" })
-                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, true, new { @class = ""}) +
-                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, false) -
+                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, true, new { @checked = true, }) Deposit
+                                    @Html.RadioButtonFor(m => m.Transaction.IsIncome, false) Purchase
                                 </div>
                                 <div class="form-group">
                                     @Html.LabelFor(m => m.Transaction.Reconciled, htmlAttributes: new { @class = "control-label" })
@@ -68,9 +73,19 @@
                                     <div class="ui-widget">
                                         @Html.LabelFor(m => m.Transaction.Category, "Category", htmlAttributes: new { @class = "control-label" })
 
-                                        @Html.DropDownList("Categories", null, htmlAttributes: new { @class = "form-control", id = "categories" })
+                                        @Html.DropDownList("CategoryId", null, "-- select a category --", htmlAttributes: new { @class = "form-control", id = "categories" })
                                         @Html.ValidationMessageFor(m => m.Transaction.Category, "", new { @class = "text-danger" })
                                     </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Created, "Date", htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.Transaction.Created, new { @class = "form-control datepicker1", id = "" })
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-facebook"><i class="fa fa-floppy-o"></i>&nbsp;Save</button>
+                                    <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i>&nbsp;Clear</button>
                                 </div>
 
                             }
@@ -83,7 +98,7 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <table class="table table-striped table-bordered table-hover" cellspacing="0" width="100%" id="TransactionTable">
+            <table class="table table-bordered table-hover" cellspacing="0" width="100%" id="TransactionTable">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -92,6 +107,7 @@
                         <th>Amount</th>
                         <th>Reconciled</th>
                         <th>Updated By</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,11 +121,21 @@
                             <td>
                                 @t.Category.Name
                             </td>
+                            @if (t.IsIncome)
+                            {
+                                <td class="alert alert-success">
+                                    @t.Amount
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="alert alert-danger">
+                                    @t.Amount
+                                </td>
+                            }
+                            
                             <td>
-                                @t.Amount
-                            </td>
-                            <td>
-                                @if(t.Reconciled == 0)
+                                @if(t.Reconciled == t.Amount)
                                 {
                                     <span class="fa fa-check-square-o"></span>
                                 }
@@ -121,6 +147,35 @@
                             <td>
                                 @t.UpdatedBy.DisplayName
                             </td>
+                            <td>
+                                @Html.Action("EditPartial", "Transaction", new { transId = t.Id, acctId = Model.AccountId })
+
+                                <a href="#" data-target ="#delete-@t.Id" data-toggle="modal" class="fa fa-trash fa-2x"></a>
+                                <!--Delete Modal Begin-->
+                                <div class="modal fade" id="delete-@t.Id" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">Delete Transaction &nbsp; <span class="fa fa-exclamation-triangle fa-2x"></span></h4>
+                                            </div>
+                                            @using (Html.BeginForm("Delete", "Transaction", new { accountId = Model.AccountId, TransId = t.Id}))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <div class="modal-body">
+
+                                                    <!--Fields: Yes or Cancel similar to leave household-->
+                                                    <h4>Are you sure you want to Delete this Transaction? </h4>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-facebook" data-dismiss="modal" aria-hidden="true">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Yes</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     }
 
@@ -128,15 +183,21 @@
             </table>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="@Url.Action("Index", "HouseAccount", new {householdid = Model.Account.HouseHoldId })" >Back to List &nbsp;<<</a>
+        </div>
+    </div>
 </div>
 
 @section page{
     <script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
     <script src="/Scripts/jquery-ui.min.js"></script>
-    
+    <script src="/Scripts/bootstrap-datepicker.js"></script>
     <script type="text/javascript">
-
+               
         $('#TransactionTable').DataTable();
-        $('#categories').combobox();
+        $('.datepicker1').datepicker();
     </script>
 }

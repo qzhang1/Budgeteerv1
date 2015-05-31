@@ -1,8 +1,8 @@
-﻿
+﻿@model Budgeteerv1.Models.ApplicationUser
 @{
     ViewBag.Title = "ProfileSettings";
 }
-
+@using Microsoft.AspNet.Identity
 <div class="container">
 
     <div class="layout layout-main-right layout-stack-sm">
@@ -70,8 +70,10 @@
 
                     <br><br>
 
-                    <form action="./page-settings.html" class="form-horizontal">
-
+                    @using (Html.BeginForm("ChangeProfile", "Dashboard", FormMethod.Post, new { @class = "form-horizontal", enctype="Multipart/form-data" })) { 
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.UserName)
+                        @Html.HiddenFor(m => m.Id)
                         <div class="form-group">
 
                             <label class="col-md-3 control-label">Avatar</label>
@@ -80,11 +82,19 @@
 
                                 <div class="fileinput fileinput-new" data-provides="fileinput">
                                     <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="min-width: 125px; min-height: 125px;">
-                                        <img src="../../global/img/avatars/avatar-3-md.jpg" alt="Avatar">
+                                        @if (Model.ProfileUrl != null)
+                                        {
+                                            <img src="@Model.ProfileUrl" alt="Avatar">
+                                        }
+                                        else
+                                        {
+                                            <img src="http://placehold.it/300x300" alt="Avatar" />
+                                        }
+                                        
                                     </div>
                                     <div>
-                                        <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" name="..."></span>
-                                        <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+                                        <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><input type="file" name="image" /></span>
+                                        
                                     </div>
                                 </div> <!-- /.fileupload -->
 
@@ -92,42 +102,16 @@
 
                         </div> <!-- /.form-group -->
 
-
-
                         <div class="form-group">
 
                             <label class="col-md-3 control-label">Username</label>
 
                             <div class="col-md-7">
-                                <input type="text" name="user-name" value="jumpstartui" class="form-control" disabled />
+                                @Html.TextBoxFor(m => Model.UserName, new { @class = "form-control",disabled="disabled" })
+                                @Html.ValidationMessageFor(m => Model.UserName, "", new { @class = "text-danger" })
                             </div> <!-- /.col -->
 
                         </div> <!-- /.form-group -->
-
-
-
-                        <div class="form-group">
-
-                            <label class="col-md-3 control-label">First Name</label>
-
-                            <div class="col-md-7">
-                                <input type="text" name="first-name" value="Rod" class="form-control" />
-                            </div> <!-- /.col -->
-
-                        </div> <!-- /.form-group -->
-
-
-
-                        <div class="form-group">
-
-                            <label class="col-md-3 control-label">Last Name</label>
-
-                            <div class="col-md-7">
-                                <input type="text" name="last-name" value="Howard" class="form-control" />
-                            </div> <!-- /.col -->
-
-                        </div> <!-- /.form-group -->
-
 
 
                         <div class="form-group">
@@ -135,7 +119,8 @@
                             <label class="col-md-3 control-label">Email Address</label>
 
                             <div class="col-md-7">
-                                <input type="text" name="email-address" value="rod@example.com" class="form-control" />
+                                @Html.TextBoxFor(m => Model.Email, new { @class = "form-control", disabled = "disabled" })
+                                @Html.ValidationMessageFor(m => Model.Email, "", new { @class = "text-danger" })
                             </div> <!-- /.col -->
 
                         </div> <!-- /.form-group -->
@@ -144,10 +129,11 @@
 
                         <div class="form-group">
 
-                            <label class="col-md-3 control-label">Website</label>
+                            <label class="col-md-3 control-label">Display Name</label>
 
                             <div class="col-md-7">
-                                <input type="text" name="website" value="http://jumpstartthemes.com" class="form-control" />
+                                @Html.TextBoxFor(m => Model.DisplayName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => Model.DisplayName, "", new { @class = "text-danger" })
                             </div> <!-- /.col -->
 
                         </div> <!-- /.form-group -->
@@ -159,7 +145,8 @@
                             <label class="col-md-3 control-label">About You</label>
 
                             <div class="col-md-7">
-                                <textarea id="about-textarea" name="about-you" rows="6" class="form-control">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.</textarea>
+                                @Html.TextAreaFor(m => Model.Description, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => Model.Description, "", new { @class = "text-danger" })
                             </div> <!-- /.col -->
 
                         </div> <!-- /.form-group -->
@@ -174,7 +161,7 @@
                             </div> <!-- /.col -->
                         </div> <!-- /.form-group -->
 
-                    </form>
+                    }
 
 
                 </div> <!-- /.tab-pane -->

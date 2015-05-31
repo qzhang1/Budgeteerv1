@@ -75,6 +75,7 @@ namespace Budgeteerv1.Controllers
                 var note = new Notification
                 {
                     ReceiverId = db.Users.FirstOrDefault(u => u.Email == model.Email).Id,
+                    SenderId = userId,
                     Created = System.DateTime.Now,
                     Message = user.DisplayName + " has invited you to Household " + user.HouseHold.Name + ".",
                     HouseholdId = model.HouseHoldId,
@@ -91,29 +92,53 @@ namespace Budgeteerv1.Controllers
         [Authorize]
         public ActionResult Join(int noteId, int? householdId)
         {
-            if(ModelState.IsValid)
-            {
-                var userId = User.Identity.GetUserId();
-                var user = db.Users.Find(userId);
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var household = db.HouseHolds.Find(householdId);
+            var notification = db.Notifications.Find(noteId);
+            if(household != null)
+            {                
                 if(user.HouseHoldId != null)
                 {
-                    ViewBag.ErrorMsg = "You are already in a Household. You can't join another Household until you leave the current Household.";
+                    TempData["ErrorMsg"] = "You are already in a Household. You can't join another Household until you leave the current Household.";
                     return RedirectToAction("Index", "Dashboard");
                 }
-                var household = db.HouseHolds.Find(householdId);
-                if(household != null)
+                //if user is not already in a household and the household they are
+                //joining exists then add user to the household and delete the notification and send notification
+                //back to sender saying receiver has joined
+                household.Users.Add(user);
+                var note = new Notification
                 {
-                    //if user is not already in a household and the household they are
-                    //joining exists then add user to the household and delete the notification
-                    household.Users.Add(user);
-                    db.Notifications.Remove(db.Notifications.Find(noteId));
-                    db.SaveChanges();
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Dashboard");
-                }
+                    ReceiverId = db.Users.FirstOrDefault(u => u.Id == notification.SenderId).Id,
+                    SenderId = user.Id,
+                    Created = System.DateTime.Now,
+                    Message = user.DisplayName + " has joined your household " + household.Name + ".",
+                    HouseholdId = householdId,
+                    Name = "Response"
+                };
+                db.Notifications.Add(note);
+                db.Notifications.Remove(db.Notifications.Find(noteId));                
+                db.SaveChanges();
+                
             }
+            else
+            {
+                //if the household doesn't exists anymore then delete the notification
+                db.Notifications.Remove(db.Notifications.Find(noteId));
+                user.Notifications.Remove(db.Notifications.Find(noteId));                
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        public ActionResult Decline(int noteId, int? householdId)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var household = db.HouseHolds.Find(householdId);
+
+            var note = db.Notifications.Find(noteId);
+            note.ReceiverId = null;
+            db.Notifications.Remove(note);
+            db.SaveChanges();
             return RedirectToAction("Index", "Dashboard");
         }
 

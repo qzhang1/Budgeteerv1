@@ -1,0 +1,468 @@
+﻿@model Budgeteerv1.Models.ChartViewModel
+@{
+    ViewBag.Title = "DataCharts";
+}
+
+
+<div class="container">
+
+    <div class="portlet portlet-default">
+
+        <div class="portlet-header">
+            <h4 class="portlet-title">
+                Monthly Stats
+            </h4>
+        </div> <!-- /.portlet-header -->
+
+        <div class="portlet-body">
+
+            <div class="row">
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Revenue This Month</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.MonthlyIncome</span></h3>                        
+                        @if (Model.IncomeChange >= 0)
+                        {
+                            <span class="label label-success row-stat-badge">+@Model.IncomeChange%</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger row-stat-badge">-@Model.IncomeChange%</span>
+                        }                                
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Expenditure This Month</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.MonthlyExpenses</span></h3>
+                        @if (Model.ExpenseChange >= 0)
+                        {
+                            <span class="label label-success row-stat-badge">+@Model.ExpenseChange%</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger row-stat-badge">-@Model.ExpenseChange%</span>
+                        }
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Total Users</p>
+                        <h3 class="row-stat-value"><span class="counter">@Model.UserCount</span></h3>
+                        @*<span class="label label-success row-stat-badge">+26%</span>*@
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Overall Balance</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.OverallBalance</span></h3>
+                        @*<span class="label label-danger row-stat-badge">+5%</span>*@
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+            </div> <!-- /.row -->
+
+        </div> <!-- /.portlet-body -->
+
+    </div> <!-- /.portlet -->
+
+
+    <div class="row">
+
+        <div class="col-md-8">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Budget vs Spending @System.DateTime.Today.Year
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+                    
+                        <div id="vertical-chart" class="chart-holder"></div><!-- /.bg-chart -->
+
+                    <br>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+        <div class="col-md-4">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Spending Breakdown
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    <div id="donut-chart" class="chart-holder" style="width: 70%;"></div>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+    </div> <!-- /.row -->
+
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Product Sales Today
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-right">Purchases</th>
+                                <th class="text-right">Revenue</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>CSS Hat</td>
+                                <td class="text-right">264</td>
+                                <td class="text-right">$3,129.98</td>
+                            </tr>
+
+                            <tr>
+                                <td>Subtle Patterns</td>
+                                <td class="text-right">20</td>
+                                <td class="text-right">$129.98</td>
+                            </tr>
+
+                            <tr>
+                                <td>PNG Hat</td>
+                                <td class="text-right">45</td>
+                                <td class="text-right">$9,129.98</td>
+                            </tr>
+
+                            <tr>
+                                <td>Academy</td>
+                                <td class="text-right">560</td>
+                                <td class="text-right">$12,249.98</td>
+                            </tr>
+
+                            <tr>
+                                <td>Social Kit</td>
+                                <td class="text-right">120</td>
+                                <td class="text-right">$0.00</td>
+                            </tr>
+
+                            <tr>
+                                <td>Pizaa</td>
+                                <td class="text-right">340</td>
+                                <td class="text-right">$0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Product Sales Breakdown
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    <div id="stacked-horizontal-chart" class="chart-holder-250"></div>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+
+    </div> <!-- /.row -->
+
+
+
+    <div class="portlet portlet-default">
+
+        <div class="portlet-header">
+            <h4 class="portlet-title">
+                Social Media Stats
+            </h4>
+        </div> <!-- /.portlet-header -->
+
+        <div class="portlet-body">
+
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Facebook Likes</p>
+                        <h3 class="row-stat-value">1,290</h3>
+                        <span class="label label-success row-stat-badge">+21</span>
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Twitter Followers</p>
+                        <h3 class="row-stat-value">3,290</h3>
+                        <span class="label label-success row-stat-badge">+10</span>
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Github Followers</p>
+                        <h3 class="row-stat-value">21,361</h3>
+                        <span class="label label-danger row-stat-badge">-5</span>
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Email Subscribers</p>
+                        <h3 class="row-stat-value">2,689</h3>
+                        <span class="label label-warning row-stat-badge">+ 0</span>
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+            </div> <!-- /.row -->
+
+        </div> <!-- /.portlet-body -->
+
+    </div> <!-- /.portlet -->
+
+
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Server Load
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="porlet-body">
+
+                    <div id="auto-chart" class="chart-holder-250"></div>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Daily Traffic
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="porlet-body">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Source</th>
+                                <th class="text-right">Visits</th>
+                                <th class="text-right">Conversion</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>socialkit</td>
+                                <td class="text-right">25,843</td>
+                                <td class="text-right">8.9%</td>
+                            </tr>
+                            <tr>
+                                <td>subtlepatterns</td>
+                                <td class="text-right">5,141</td>
+                                <td class="text-right">2.4%</td>
+                            </tr>
+                            <tr>
+                                <td>google</td>
+                                <td class="text-right">2,562</td>
+                                <td class="text-right">1.2%</td>
+                            </tr>
+                            <tr>
+                                <td>facebook</td>
+                                <td class="text-right">345</td>
+                                <td class="text-right">0.02%</td>
+                            </tr>
+                            <tr>
+                                <td>Social Kit</td>
+                                <td class="text-right">12</td>
+                                <td class="text-right">0.0%</td>
+                            </tr>
+                            <tr>
+                                <td>webappers</td>
+                                <td class="text-right">9</td>
+                                <td class="text-right">0.0%</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+    </div> <!-- /.row -->
+
+
+
+</div> <!-- /.container -->
+
+@section page
+{
+    <script src="/Scripts/donut.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.counter').counterUp({
+                delay: 10,
+                time: 1000
+            });
+
+            
+
+            $.ajax({
+                url: '/Dashboard/ChartData',
+                dataType: "json",
+                type: "GET",
+                async: true,
+                cache: false,
+                success: function (data) {
+                    var d1, d2, d3, data, chartOptions;
+                    
+                    d1 = [
+                        [1420088400000, 120], [1422766800000, 700], [1425186000000, 1200], [1427860800000, 600],
+                        [1430452800000, 300], [1433131200000, 1200], [1435723200000, 300], [1438401600000, 1000], [1441080000000,1200],
+                        [1443672000000, 800], [1446350400000, 766], [1448946000000, 905]
+                    ];
+
+                    d2 = [
+                        [1420088400000, 800], [1422766800000, 600], [1425186000000, 300], [1427860800000, 350],
+                        [1430452800000, 300], [1433131200000, 1200], [1435723200000, 300], [1438401600000, 1000], [1441080000000,1200],
+                        [1443672000000, 800], [1446350400000, 888], [1448946000000, 899]
+                    ];
+
+                    d3 = [
+                        [1420088400000, 650], [1422766800000, 450], [1425186000000, 150], [1427860800000, 200],
+                        [1430452800000, 150], [1433131200000, 1200], [1435723200000, 300], [1438401600000, 1000], [1441080000000,1200],
+                        [1443672000000, 800], [1446350400000, 2311], [1448946000000, 3210]
+                    ];
+
+                    data = [{
+                        label: 'Income',
+                        data: d1,
+                        bars: {
+                            order: 0
+                        }
+                    }, {
+                        label: 'Expenses',
+                        data: d2,
+                        bars: {
+                            order: 1
+                        }
+                    }, {
+                        label: 'Budget',
+                        data: d3,
+                        bars: {
+                            order: 2
+                        }
+                    }];
+
+                    chartOptions = {
+                        xaxis: {
+                            min: (new Date(2014, 11, 15)).getTime(),
+                            max: (new Date(2015, 11, 15)).getTime(),                            
+                            mode: "time",
+                            tickSize: [1, "month"],
+                            monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                            tickLength: 0
+                        },
+                        grid: {
+                            hoverable: true,
+                            clickable: false,
+                            borderWidth: 0
+                        },
+                        bars: {
+                            show: true,
+                            barWidth: 12 * 24 * 60 * 60 * 300,
+                            fill: true,
+                            lineWidth: 1,
+                            lineWidth: 0,
+                            fillColor: { colors: [{ opacity: 1 }, { opacity: 1 }] }
+                        },
+
+                        tooltip: true,
+                        tooltipOpts: {
+                            content: '%s: %y'
+                        },
+                        colors: mvpready_core.layoutColors
+                    }
+
+
+                    var holder = $('#vertical-chart');
+
+                    if (holder.length) {
+                        $.plot(holder, data, chartOptions);
+                    }
+   
+                },
+                error: function(xhr)
+                {
+                    alert(xhr.statusText);
+                }
+            });
+
+            alert("I'm here")                                        
+        
+        });
+    </script>
+    
+}

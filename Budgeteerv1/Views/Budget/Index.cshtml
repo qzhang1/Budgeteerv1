@@ -1,0 +1,178 @@
+﻿
+<!--2 tables and one panel for making budget items and one modal for making categories-->
+@model Budgeteerv1.Models.BudgetViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered">
+                            <caption><h4>Income</h4></caption>
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Annual Frequency</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var item in Model.Income)
+                                {
+                                    <tr>
+                                        <td>@item.Description</td>
+                                        @if(item.Category == null)
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.Category.Name</td>
+                                        }                                        
+                                        <td>@item.Amount</td>
+                                        <td>@item.Frequency</td>
+                                        <td><a href="#" data-target="#delete-@item.Id" data-toggle="modal" class="fa fa-trash fa-2x"></a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered">
+                            <caption><h4>Expenses</h4></caption>
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Annual Frequency</th>
+                                    <th>Action</th>
+                                </tr>                            
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Expenses)
+                                {
+                                    <tr>
+                                        <td>@item.Description</td>
+                                        <td>@item.Category.Name</td>
+                                        <td>@item.Amount</td>
+                                        <td>@item.Frequency</td>
+                                        <td><a href="#" data-target="#delete-@item.Id" data-toggle="modal" class="fa fa-trash fa-2x"></a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            
+        </div>
+        <div class="col-sm-6">
+            <div class="portlet portlet-boxed">
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        <u><i class="fa fa-plus"></i>
+                        &nbsp;Add Budget Item</u>
+                    </h4>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        @using (Html.BeginForm("Create", "Budget", new { hhId = Model.householdId}, FormMethod.Post))
+                        {
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    @Html.RadioButtonFor(m => m.BudgetItem.IsIncome, true, new { @checked = true }) Income
+                                    @Html.RadioButtonFor(m => m.BudgetItem.IsIncome, false) Expense
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    @Html.LabelFor(m => m.BudgetItem.Category, "Category", htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownList("CategoryId", null, "-- select a category --", htmlAttributes: new { @class = "form-control", id = "categories" })
+                                    @Html.ValidationMessageFor(m => m.BudgetItem.Category, "", new { @class = "text-danger" })
+                                    <div class="input-group-btn">
+                                        <!--modal form to add category-->
+                                        <a href="#CreateCategory" class="btn btn-primary" data-toggle="modal"><i class="fa fa-plus-circle fa-2x"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                           
+
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BudgetItem.Description, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.BudgetItem.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.BudgetItem.Description, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BudgetItem.Amount, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.BudgetItem.Amount, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.BudgetItem.Amount, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BudgetItem.Frequency, htmlAttributes: new { @class = "control-label" })
+                                    @Html.TextBoxFor(m => m.BudgetItem.Frequency, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.BudgetItem.Frequency, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <button type="reset" class="btn btn-secondary">Reset</button>
+                                </div>
+                            </div>
+                        }
+                        
+                        <!--Create Category Modal-->
+                        <div id="CreateCategory" class="modal fade">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h2 class="modal-title">Create Category</h2>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!--Fields: Name, Balance-->
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                @using (Html.BeginForm("CreateCat", "Budget", new { hhId = Model.householdId }, FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                    @Html.HiddenFor(m => Model.householdId)
+                                                    
+                                                        <!--Description-->
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(m => m.Category.Name, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.TextBoxFor(m => m.Category.Name, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(m => m.Category.Name, "", new { @class = "text-danger" })
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-facebook"><i class="fa fa-floppy-o"></i>&nbsp;Save</button>
+                                                        <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i>&nbsp;Clear</button>
+                                                    </div>
+
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

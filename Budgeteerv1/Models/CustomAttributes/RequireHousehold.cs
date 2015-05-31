@@ -25,10 +25,10 @@ namespace Budgeteerv1.Models.CustomAttributes
             {
                 base.HandleUnauthorizedRequest(filterContext);
             }
-            else
-            {
-                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Dashboard", action = "Index" }));
-            }
+            //else
+            //{
+            //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Dashboard", action = "Index" }));
+            //}
         }
     }
 }

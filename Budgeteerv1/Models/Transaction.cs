@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+
 
 namespace Budgeteerv1.Models
 {
@@ -9,6 +11,7 @@ namespace Budgeteerv1.Models
     {
         public int Id { get; set; }
         public decimal Amount { get; set; }
+        [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public string Description { get; set; }
