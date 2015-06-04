@@ -8,7 +8,9 @@ using Budgeteerv1.Models;
 namespace Budgeteerv1.Models
 {
     public class ChartViewModel
-    {        
+    {
+
+        public int? HouseholdId { get; set; }
 
         public decimal MonthlyIncome { get; set; }
         public decimal MonthlyExpenses { get; set; }

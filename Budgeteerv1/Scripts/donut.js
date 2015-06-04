@@ -3,11 +3,11 @@ $(function () {
 	var data, chartOptions
 
 	data = [
-		{ label: "Product 1", data: Math.floor (Math.random() * 100 + 250) }, 
-		{ label: "Product 2", data: Math.floor (Math.random() * 100 + 350) }, 
-		{ label: "Product 3", data: Math.floor (Math.random() * 100 + 650) }, 
-		{ label: "Product 4", data: Math.floor (Math.random() * 100 + 50) },
-		{ label: "Product 5", data: Math.floor (Math.random() * 100 + 250) }
+		{ label: "Product 1", data:  250 }, 
+		{ label: "Product 2", data: Math.floor (350) }, 
+		{ label: "Product 3", data: Math.floor (650) }, 
+		{ label: "Product 4", data: Math.floor (750) },
+		{ label: "Product 5", data: Math.floor (250) }
 	]
 
 	chartOptions = {		
@@ -25,7 +25,7 @@ $(function () {
 		}, 
 		tooltip: true,
 		tooltipOpts: {
-			content: '%s: %y'
+			content: '%s, %p.0%'
 		},
 		grid: {
 			hoverable: true

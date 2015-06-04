@@ -30,9 +30,9 @@ namespace Budgeteerv1.Models.helper
             foreach(var a in accts)
             {
                 MonthlyExpense += a.Transactions.Where(i => i.IsIncome == false).Where(c => c.Created.Month == System.DateTime.Today.Month).Sum(s => s.Amount);
-                ExpenseChange += a.Transactions.Where(i => i.IsIncome == false).Where(c => c.Created.Month == (System.DateTime.Today.Month + 1)).Sum(s => s.Amount);
+                ExpenseChange += a.Transactions.Where(i => i.IsIncome == false).Where(c => c.Created.Month == (System.DateTime.Today.Month - 1)).Sum(s => s.Amount);
                 MonthlyIncome += a.Transactions.Where(i => i.IsIncome == true).Where(c => c.Created.Month == System.DateTime.Today.Month).Sum(s => s.Amount);
-                IncomeChange += a.Transactions.Where(i => i.IsIncome == true).Where(c => c.Created.Month == (System.DateTime.Today.Month + 1)).Sum(s => s.Amount);
+                IncomeChange += a.Transactions.Where(i => i.IsIncome == true).Where(c => c.Created.Month == (System.DateTime.Today.Month - 1)).Sum(s => s.Amount);
                 OverallBalance += a.Balance;
                 
             }

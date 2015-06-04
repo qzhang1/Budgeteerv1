@@ -1,0 +1,75 @@
+﻿@model Budgeteerv1.Models.AccountTransactionViewModel
+
+
+<div class="panel-group accordion-panel" id="accordion-paneled">
+    <div class="panel open is-open">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-paneled" href="#collapseTwo" aria-expanded="false">
+                    <i class="fa accordion-caret"></i>
+                    Accounts
+                </a>
+            </h4>
+        </div>
+        <div class="panel-collapse collapse in" id="collapseTwo">
+            <div class="panel-body">
+                <!--table for recent transactions-->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Balance</th>
+                            <th>Reconciled</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Accounts)
+                        {
+                            <tr>
+                                <td>@a.Name</td>
+                                <td>@a.Balance</td>
+                                <td>@a.Reconciled</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel open is-open">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-paneled" href="#collapseOne" aria-expanded="true">
+                    <i class="fa accordion-caret"></i>
+                    Recent Transactions
+                </a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in">
+            <div class="panel-body">
+                <!--table for recent transactions-->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>   
+                            <th>Category</th>                         
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var t in Model.Transactions)
+                        {
+                            <tr>
+                                <td>@t.Created.ToShortDateString()</td>
+                                <td>@t.Description</td>
+                                <td>@t.Category.Name</td>
+                                <td>@t.Amount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

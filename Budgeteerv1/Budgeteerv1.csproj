@@ -177,7 +177,9 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountTransactionViewModel.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\BarChartViewModel.cs" />
     <Compile Include="Models\BudgetItem.cs" />
     <Compile Include="Models\BudgetViewModel.cs" />
     <Compile Include="Models\Category.cs" />
@@ -411,6 +413,8 @@
     <Content Include="Views\Dashboard\DataCharts.cshtml" />
     <Content Include="Views\Dashboard\_ProfileImage.cshtml" />
     <Content Include="Views\Transaction\_EditTransaction.cshtml" />
+    <Content Include="Views\Dashboard\_BarChart.cshtml" />
+    <Content Include="Views\Dashboard\_RecentTransactions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -11,7 +11,8 @@ using System.IO;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.Validation;
 using System.Data.Entity;
-
+using Budgeteerv1.Models.extensions;
+using Newtonsoft.Json;
 
 namespace Budgeteerv1.Controllers
 {
@@ -49,14 +50,6 @@ namespace Budgeteerv1.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-
-        [HttpGet]
-        public JsonResult ChartData()
-        {
-            //var income = db.Transactions.Where(i => i.IsIncome == true).Where(c => c.Created.Month == System.DateTime.Today.Month).Sum(s => s.Amount);
-            return Json(new[] { 500, 1000, 2000, 3000, 4000, 3000}, JsonRequestBehavior.AllowGet);
-        }
-
         public ActionResult ProfileSettings()
         {
             var userId = User.Identity.GetUserId();
@@ -66,7 +59,7 @@ namespace Budgeteerv1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ChangeProfile([Bind(Include="ProfileUrl,Description,DisplayName")]ApplicationUser model, HttpPostedFileBase image)
+        public ActionResult ChangeProfile(ApplicationUser model, HttpPostedFileBase image)
         {
             //check if image is valid image file
             if (image != null && image.ContentLength > 0)
@@ -97,7 +90,11 @@ namespace Budgeteerv1.Controllers
                     //db.Entry(model).Property("UserName").IsModified = true;
                     //db.Entry(model).State = EntityState.Modified;
                     var user = db.Users.Find(User.Identity.GetUserId());
-                    user.ProfileUrl = model.ProfileUrl;
+                    if(model.ProfileUrl != null)
+                    {
+                        user.ProfileUrl = model.ProfileUrl;
+                    }
+                    
                     if(model.Description != null && model.DisplayName != null)
                     {
                         user.Description = model.Description;
@@ -147,11 +144,126 @@ namespace Budgeteerv1.Controllers
             return PartialView("_ProfileImage",db.Users.Find(User.Identity.GetUserId()));
         }
 
+
+        /*
+         *      Dashboard Data Charts
+         * 
+         * */
+        //Index
         public ActionResult DataCharts()
         {
-            int? hhId = db.Users.Find(User.Identity.GetUserId()).HouseHoldId;
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
             var model = ch.Calculate(hhId);
+            model.HouseholdId = hhId;
             return View(model);
+        }
+
+
+        [HttpGet]
+        public ActionResult ChartData()
+        {
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+
+            var household = db.HouseHolds.Find(hhId);
+
+            //var monthsToDate = Enumerable.Range(1, DateTime.Today.Month)
+            //                    .Select(m => new DateTime(DateTime.Today.Year, m, 1))
+            //                    .ToList();
+
+            var monthsToDate = Enumerable.Range(1, 12)
+                                .Select(m => new DateTime(DateTime.Today.Year, m, 1))
+                                .ToList();
+
+            var sums = from month in monthsToDate
+                       select new
+                       {
+                           month = month,
+
+                           income = (from account in household.Accounts
+                                     from transaction in account.Transactions
+                                     where transaction.IsIncome && transaction.Created.Month == month.Month
+                                     select transaction.Amount).DefaultIfEmpty().Sum(),
+
+                           expense = (from account in household.Accounts
+                                      from transaction in account.Transactions
+                                      where !transaction.IsIncome && transaction.Created.Month == month.Month
+                                      select transaction.Amount).DefaultIfEmpty().Sum(),
+
+                           //budget = household.Budgets.Where(i => i.IsIncome)
+                           //.Where(c => c.Created.Month >= month.Month && 
+                           //    c.Created.Month <= (month.Month + ((c.Created.Month + c.Frequency >12)? (12-c.Frequency):(c.Created.Month + c.Frequency))))
+                           //    .Select(b => b.Amount * (1/b.Frequency)).DefaultIfEmpty().Sum()
+                           budgetexpense = (from budget in household.Budgets
+                                     where budget.Created.Month <= month.Month && (budget.Created.Month + budget.Frequency) >= month.Month
+                                     where !budget.IsIncome
+                                     select budget.Amount/budget.Frequency).DefaultIfEmpty().Sum(),
+
+                           budgetincome = (from budget in household.Budgets
+                                            where budget.Created.Month <= month.Month && (budget.Created.Month + budget.Frequency) >= month.Month
+                                            where budget.IsIncome
+                                            select budget.Amount / budget.Frequency).DefaultIfEmpty().Sum()
+                       };
+
+            var flotData = new {
+                income = sums.ToDictionary( k=> k.month, v=>v.income),
+                expense = sums.ToDictionary( k=> k.month, v=>v.expense),
+                budgetexpense = sums.ToDictionary( k=> k.month, v=>v.budgetexpense),
+                budgetincome = sums.ToDictionary( k=> k.month, v=>v.budgetincome)
+            };
+
+            return Content( JsonConvert.SerializeObject(flotData),"application/json");
+
+        }
+
+        [HttpGet]
+        public ActionResult fillmydonut()
+        {
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var household = db.HouseHolds.Find(hhId);
+            var categories = household.Categories.ToList();
+            var donutData = from category in categories
+                            select new
+                            {
+                                category = category.Name,
+
+                                amount = (from account in household.Accounts
+                                          from transaction in account.Transactions
+                                          where transaction.Category.Name == category.Name
+                                          select transaction.Amount).DefaultIfEmpty().Sum()
+                            };
+            var x = 1;
+            return Content(JsonConvert.SerializeObject(donutData), "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult drawmyline()
+        {
+            //objective: find the balance at the end of each month and plot them as points in a line chart
+            //balance = income - expense for each acct for each month
+            //steps: find household generate month enumerable 
+
+        }
+
+
+        public ActionResult RecentTransactions()
+        {
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var household = db.HouseHolds.Find(hhId);
+
+            var RecentTrans = (from account in household.Accounts
+                               from transaction in account.Transactions
+                               orderby transaction.Created descending
+                               select transaction).Take(5);
+            var RecentAcct = (from account in household.Accounts
+                              select account).Take(3);
+
+            var model = new AccountTransactionViewModel
+            {
+                Transactions = RecentTrans,
+                Accounts = RecentAcct
+            };
+
+            return PartialView("_RecentTransactions", model);
         }
     }
 }

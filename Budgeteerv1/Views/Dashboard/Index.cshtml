@@ -33,6 +33,12 @@
          @if (Model.HouseHoldId != null)
          {
             <div class="list-group">
+                <a href="@Url.Action("DataCharts", "Dashboard", new { hhId = Model.HouseHoldId})" class="list-group-item">
+                    <i class="fa fa-area-chart text-primary"></i> &nbsp;&nbsp;Dashboard
+
+                    <i class="fa fa-chevron-right list-group-chevron"></i>
+                    
+                </a>
                 <a href="@Url.Action("Index", "HouseAccount", new { householdid = Model.HouseHoldId})" class="list-group-item">
                     <i class="fa fa-asterisk text-primary"></i> &nbsp;&nbsp;Accounts
 
@@ -73,7 +79,15 @@
                                                 @foreach (var member in Model.HouseHold.Users)
                                                 {
                                                     <tr>
-                                                        <td><img src="http://placehold.it/100x100" /></td>
+                                                        @if(member.ProfileUrl != null)
+                                                        {
+                                                            <td><img src = "@member.ProfileUrl" height="100" width="100"/></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><img src="http://placehold.it/100x100" /></td>
+                                                        }
+                                                        
                                                         <td>@member.DisplayName</td>
                                                     </tr>
                                                 }                                                
@@ -275,7 +289,7 @@
                 </h4>
             </div> <!-- /.heading-block -->
             <div class="share-widget clearfix">
-                <textarea class="form-control share-widget-textarea" rows="3" placeholder="Share what you've been up to..." tabindex="1"></textarea>
+                @*<textarea class="form-control share-widget-textarea" rows="3" placeholder="Share what you've been up to..." tabindex="1"></textarea>
                 <div class="share-widget-actions">
                     <div class="share-widget-types pull-left">
                         <a href="javascript:;" class="fa fa-picture-o ui-tooltip" title="Post an Image"><i></i></a>
@@ -402,9 +416,10 @@
                 </div> <!-- /.feed-actions -->
             </div> <!-- /.feed-item -->
             <br class="visible-xs">
-            <br class="visible-xs">
-
+            <br class="visible-xs">*@
+            @Html.Action("RecentTransactions")
         </div> <!-- /.col -->
+        </div>
 
         <div class="col-md-3">
             <div class="heading-block">
