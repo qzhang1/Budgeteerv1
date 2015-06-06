@@ -235,14 +235,14 @@ namespace Budgeteerv1.Controllers
             return Content(JsonConvert.SerializeObject(donutData), "application/json");
         }
 
-        [HttpGet]
-        public ActionResult drawmyline()
-        {
-            //objective: find the balance at the end of each month and plot them as points in a line chart
-            //balance = income - expense for each acct for each month
-            //steps: find household generate month enumerable 
+        //[HttpGet]
+        //public ActionResult drawmyline()
+        //{
+        //    //objective: find the balance at the end of each month and plot them as points in a line chart
+        //    //balance = income - expense for each acct for each month
+        //    //steps: find household generate month enumerable 
 
-        }
+        //}
 
 
         public ActionResult RecentTransactions()
