@@ -193,6 +193,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Notification.cs" />
+    <Compile Include="Models\ProgressBarViewModel.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransactionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -333,6 +334,7 @@
     <Content Include="Scripts\donut.js" />
     <Content Include="Scripts\excanvas.min.js" />
     <Content Include="Scripts\formattingNumbers.js" />
+    <Content Include="Scripts\jqmeter.min.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
@@ -415,6 +417,7 @@
     <Content Include="Views\Transaction\_EditTransaction.cshtml" />
     <Content Include="Views\Dashboard\_BarChart.cshtml" />
     <Content Include="Views\Dashboard\_RecentTransactions.cshtml" />
+    <Content Include="Views\Dashboard\ProgressBar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

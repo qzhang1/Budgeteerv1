@@ -33,6 +33,48 @@ namespace Budgeteerv1.Controllers
             return View(model);
         }
 
+
+        public ActionResult FillProgressBar()
+        {
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var household = db.HouseHolds.Find(hhId);
+            //var categories = household.Categories.ToList();
+            var stuff = from category in household.Categories
+                        select new
+                        {
+                            cat = category.Name,
+                            amt = (from acct in household.Accounts
+                                   from trans in acct.Transactions
+                                   where trans.CategoryId == category.Id
+                                   where !trans.IsIncome
+                                   where trans.Created.Month == System.DateTime.Now.Month
+                                   select trans.Amount).DefaultIfEmpty().Sum(),
+                            budgetamt = (from budget in household.Budgets
+                                         where budget.CategoryId == category.Id
+                                         select budget.Amount/budget.Frequency).DefaultIfEmpty().Sum()
+                        };
+            var tmp = from a in stuff
+                    where a.amt != 0
+                    select new
+                    {
+                        cat = a.cat,
+                        amt = (a.amt),
+                        budgetamt = a.budgetamt
+                    };
+
+            IEnumerable<ProgressBarViewModel> p = from s in tmp 
+                                                  select new ProgressBarViewModel
+                                                  {
+                                                      CategoryName = s.cat,                                                      
+                                                      AmtPercent = s.amt,
+                                                      BudgetPercent = s.budgetamt
+                                                  };
+            
+            var x = 0;
+            return Content(JsonConvert.SerializeObject(p), "application/json");
+        }
+
+
         [HttpGet]
         public JsonResult ItemCount(int householdId)
         {
@@ -188,11 +230,7 @@ namespace Budgeteerv1.Controllers
                                       from transaction in account.Transactions
                                       where !transaction.IsIncome && transaction.Created.Month == month.Month
                                       select transaction.Amount).DefaultIfEmpty().Sum(),
-
-                           //budget = household.Budgets.Where(i => i.IsIncome)
-                           //.Where(c => c.Created.Month >= month.Month && 
-                           //    c.Created.Month <= (month.Month + ((c.Created.Month + c.Frequency >12)? (12-c.Frequency):(c.Created.Month + c.Frequency))))
-                           //    .Select(b => b.Amount * (1/b.Frequency)).DefaultIfEmpty().Sum()
+                           
                            budgetexpense = (from budget in household.Budgets
                                      where budget.Created.Month <= month.Month && (budget.Created.Month + budget.Frequency) >= month.Month
                                      where !budget.IsIncome
@@ -204,11 +242,41 @@ namespace Budgeteerv1.Controllers
                                             select budget.Amount / budget.Frequency).DefaultIfEmpty().Sum()
                        };
 
+            decimal tmp = 0;
+
+            //var balances = from month in monthsToDate
+            //                from a in sums
+            //                select new
+            //                {
+            //                    Month = month,
+            //                    balance = (a.income - a.expense)
+            //                });
+            var balances = from month in monthsToDate
+                           select new {
+                               month = month,
+                               balance = (from a in sums
+                                         select (a.income - a.expense)).Sum()
+                           };
+
+
+            //var balances = (from a in sums
+            //               select (a.income - a.expense)).ToArray();
+
+            //for (int i = 0; i < balances.Count(); i++)
+            //{
+            //    balances[i] = balances[i] + tmp;
+            //    tmp = balances[i];
+            //}
+            
+            
+
             var flotData = new {
                 income = sums.ToDictionary( k=> k.month, v=>v.income),
                 expense = sums.ToDictionary( k=> k.month, v=>v.expense),
                 budgetexpense = sums.ToDictionary( k=> k.month, v=>v.budgetexpense),
-                budgetincome = sums.ToDictionary( k=> k.month, v=>v.budgetincome)
+                budgetincome = sums.ToDictionary( k=> k.month, v=>v.budgetincome),
+                b = balances.ToDictionary(k => k.month, v => v.balance)
+                
             };
 
             return Content( JsonConvert.SerializeObject(flotData),"application/json");
@@ -231,7 +299,7 @@ namespace Budgeteerv1.Controllers
                                           where transaction.Category.Name == category.Name
                                           select transaction.Amount).DefaultIfEmpty().Sum()
                             };
-            var x = 1;
+            
             return Content(JsonConvert.SerializeObject(donutData), "application/json");
         }
 
@@ -241,6 +309,43 @@ namespace Budgeteerv1.Controllers
         //    //objective: find the balance at the end of each month and plot them as points in a line chart
         //    //balance = income - expense for each acct for each month
         //    //steps: find household generate month enumerable 
+        //    var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+        //    var household = db.HouseHolds.Find(hhId);
+
+        //    var monthsToDate = Enumerable.Range(1, 12)
+        //                        .Select(m => new DateTime(DateTime.Today.Year, m, 1))
+        //                        .ToList();
+
+        //    var balances = from month in monthsToDate
+        //                   select new
+        //                   {
+        //                       income = (from account in household.Accounts
+        //                                 from transaction in account.Transactions
+        //                                 where transaction.Created.Month == month.Month
+        //                                 where transaction.IsIncome
+        //                                 select transaction.Amount).DefaultIfEmpty().Sum(),
+
+        //                       expense = (from account in household.Accounts
+        //                                  from transaction in account.Transactions
+        //                                  where transaction.Created.Month == month.Month
+        //                                  where !transaction.IsIncome
+        //                                  select transaction.Amount).DefaultIfEmpty().Sum(),
+
+        //                       //balance = (from account in household.Accounts
+        //                       //           from transaction in account.Transactions
+        //                       //           where transaction.Created.Month == month.Month
+        //                       //           where transaction.IsIncome
+        //                       //           select transaction.Amount).DefaultIfEmpty().Sum() -
+        //                       //           (from account in household.Accounts
+        //                       //            from transaction in account.Transactions
+        //                       //            where transaction.Created.Month == month.Month
+        //                       //            where !transaction.IsIncome
+        //                       //            select transaction.Amount).DefaultIfEmpty().Sum()
+
+        //                   };
+
+        //    var x = 1;
+        //    return View();
 
         //}
 
