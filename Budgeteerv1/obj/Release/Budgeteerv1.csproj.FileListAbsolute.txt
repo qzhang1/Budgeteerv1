@@ -53,3 +53,8 @@ C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\Microsoft.Ow
 C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\obj\Release\Budgeteerv1.csprojResolveAssemblyReference.cache
 C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\obj\Release\Budgeteerv1.dll
 C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\obj\Release\Budgeteerv1.pdb
+C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\AutoMapper.Net4.dll
+C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\AutoMapper.dll
+C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\AutoMapper.pdb
+C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\AutoMapper.xml
+C:\Users\Qi 2 da Izzal\Documents\GitHub\Budgeteerv1\Budgeteerv1\bin\AutoMapper.Net4.pdb

@@ -121,11 +121,21 @@
                             <td>
                                 @t.Category.Name
                             </td>
+                            @if (t.IsIncome)
+                            {
+                                <td class="alert alert-success">
+                                    @t.Amount
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="alert alert-danger">
+                                    @t.Amount
+                                </td>
+                            }
+                            
                             <td>
-                                @t.Amount
-                            </td>
-                            <td>
-                                @if(t.Reconciled == 0)
+                                @if(t.Reconciled == t.Amount)
                                 {
                                     <span class="fa fa-check-square-o"></span>
                                 }
@@ -138,70 +148,7 @@
                                 @t.UpdatedBy.DisplayName
                             </td>
                             <td>
-                                <a href="#" class="fa fa-pencil fa-2x editform" data-toggle="modal" data-target="#edit-@t.Id" data-transaction-id="@t.Id"></a>
-                                 
-                                <!--Edit Modal Begin-->
-                                <div class="modal fade" id="edit-@t.Id" tabindex="-1" role="dialog" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                <h4 class="modal-title">Edit Transaction &nbsp; <span class="fa fa-pencil fa-2x"></span></h4>
-                                            </div>
-                                            
-                                                    @using (Html.BeginForm("Edit", "Transaction", new { TransId = t.Id}))
-                                                    {
-                                                        @Html.AntiForgeryToken()
-                                                        @Html.HiddenFor(m => Model.AccountId)
-                                                       
-                                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                                        <div class="modal-body">
-                                                            <!--Description-->
-                                                            <div class="form-group">
-                                                                @Html.LabelFor(m => m.Transaction.Description, htmlAttributes: new { @class = "control-label" })
-                                                                @Html.TextBoxFor(m => m.Transaction.Description, new { @class = "form-control description" })
-                                                                @Html.ValidationMessageFor(m => m.Transaction.Description, "", new { @class = "text-danger" })
-                                                            </div>
-                                                            <!--Amount. +/- -->
-                                                            <div class="form-group">
-                                                                @Html.LabelFor(m => m.Transaction.Amount, htmlAttributes: new { @class = "control-label" })
-                                                                @Html.TextBoxFor(m => m.Transaction.Amount, new { @class = "form-control amount" })
-                                                                @Html.ValidationMessageFor(m => m.Transaction.Amount, "", new { @class = "text-danger" })
-                                                                @Html.RadioButtonFor(m => m.Transaction.IsIncome, true, new { @checked = true, }) Deposit
-                                                                @Html.RadioButtonFor(m => m.Transaction.IsIncome, false) Purchase
-                                                            </div>
-                                                            <div class="form-group">
-                                                                @Html.LabelFor(m => m.Transaction.Reconciled, htmlAttributes: new { @class = "control-label" })
-                                                                @Html.TextBoxFor(m => m.Transaction.Reconciled, new { @class = "form-control reconciled" })
-                                                                @Html.ValidationMessageFor(m => m.Transaction.Reconciled, "", new { @class = "text-danger" })
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <div class="ui-widget">
-                                                                    @Html.LabelFor(m => m.Transaction.Category, "Category", htmlAttributes: new { @class = "control-label" })
-                                                                    @Html.DropDownList("CategoryId", null, "-- select a category --", htmlAttributes: new { @class = "form-control", id = "categories" })                                                                   
-                                                                    @Html.ValidationMessageFor(m => m.Transaction.Category, "", new { @class = "text-danger" })
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                @Html.LabelFor(m => m.Transaction.Created, "Date", htmlAttributes: new { @class = "control-label" })
-                                                                @Html.TextBoxFor(m => m.Transaction.Created, new { @class = "form-control datepicker1", })
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-primary">Update</button>
-                                                            <button type="reset" class="btn btn-success">Reset</button>
-                                                            <button type="button" class="btn btn-facebook" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                                                        </div>
-
-                                                    }
-                                                
-                                            
-                                        </div>
-                                    </div>
-                                </div>
+                                @Html.Action("EditPartial", "Transaction", new { transId = t.Id, acctId = Model.AccountId })
 
                                 <a href="#" data-target ="#delete-@t.Id" data-toggle="modal" class="fa fa-trash fa-2x"></a>
                                 <!--Delete Modal Begin-->
@@ -249,28 +196,7 @@
     <script src="/Scripts/jquery-ui.min.js"></script>
     <script src="/Scripts/bootstrap-datepicker.js"></script>
     <script type="text/javascript">
-        
-        $('.editform').click(function () {
-            
-            $.ajax({
-                type: 'GET',
-                url: "/Transaction/EditTransactionInfo/" + $(this).data('transaction-id'),
-                dataType: 'json',
-                data: { transId: $(this).data('transaction-id') },
-                contentType: 'application/json',
-                success: function (data) {
-                    alert('Success');
-                    $('.description').val(data.Description);
-                    $('.amount').val(data.Amount);
-                    $('.reconciled').val(data.Reconciled);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert(xhr.status);
-                    alert(xhr.responseText);
-                    alert(thrownError);
-                }
-            });
-        });
+               
         $('#TransactionTable').DataTable();
         $('.datepicker1').datepicker();
     </script>

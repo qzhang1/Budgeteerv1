@@ -1,0 +1,69 @@
+﻿@model Budgeteerv1.Models.Transaction
+
+
+<a href="#" class="fa fa-pencil fa-2x editform" data-toggle="modal" data-target="#edit-Transaction-@Model.Id"></a>
+
+<!--Edit Modal Begin-->
+<div class="modal fade" id="edit-Transaction-@Model.Id" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Edit Transaction &nbsp; <span class="fa fa-pencil fa-2x"></span></h4>
+            </div>
+            
+            @using (Html.BeginForm("Edit", "Transaction"))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.AccountId)
+                @Html.HiddenFor(m => m.Id)
+                
+                @Html.HiddenFor(m => m.UpdatedById)
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="modal-body">
+                    <!--Description-->
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Description, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Description, new { @class = "form-control description" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                    </div>
+                    <!--Amount. +/- -->
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Amount, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Amount, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
+                        @Html.RadioButtonFor(m => m.IsIncome, true, new { @checked = true, }) Deposit
+                        @Html.RadioButtonFor(m => m.IsIncome, false) Purchase
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Reconciled, htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Reconciled, new { @class = "form-control reconciled" })
+                        @Html.ValidationMessageFor(m => m.Reconciled, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <div class="ui-widget">
+                            @Html.LabelFor(m => m.Category, "Category", htmlAttributes: new { @class = "control-label" })
+                            @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control", id = "categories" })
+                            @Html.ValidationMessageFor(m => m.Category, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Created, "Date", htmlAttributes: new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Created, new { @class = "form-control datepicker1", })
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="reset" class="btn btn-success">Reset</button>
+                    <button type="button" class="btn btn-facebook" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                </div>
+
+            }
+
+
+        </div>
+    </div>
+</div>

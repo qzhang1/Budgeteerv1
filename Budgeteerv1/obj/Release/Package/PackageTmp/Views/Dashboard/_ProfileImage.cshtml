@@ -1,0 +1,14 @@
+﻿@model Budgeteerv1.Models.ApplicationUser
+
+@if (Model.ProfileUrl == null)
+{
+    <img src="http://placehold.it/50x50" class="navbar-profile-avatar" alt="">
+    <span class="visible-xs-inline">@Model.DisplayName &nbsp;</span>
+    <i class="fa fa-caret-down"></i>
+}
+else
+{
+    <img src="@Model.ProfileUrl" class="navbar-profile-avatar" alt="">
+    <span class="visible-xs-inline">@Model.DisplayName &nbsp;</span>
+    <i class="fa fa-caret-down"></i>
+}

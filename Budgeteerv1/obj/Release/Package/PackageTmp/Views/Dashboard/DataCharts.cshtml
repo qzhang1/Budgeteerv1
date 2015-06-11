@@ -1,0 +1,456 @@
+﻿@model Budgeteerv1.Models.ChartViewModel
+@using Budgeteerv1.Models          
+@{
+    ViewBag.Title = "DataCharts";
+}
+
+
+<div class="container">
+
+    <div class="portlet portlet-default">
+
+        <div class="portlet-header">
+            <h4 class="portlet-title">
+                Monthly Stats
+            </h4>
+        </div> <!-- /.portlet-header -->
+
+        <!--Top row nonchart data-->
+        <div class="portlet-body">
+
+            <div class="row">
+            
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Revenue This Month</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.MonthlyIncome</span></h3>                        
+                        @if (Model.IncomeChange >= 0)
+                        {
+                            <span class="label label-success row-stat-badge">+@Model.IncomeChange%</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger row-stat-badge">-@Model.IncomeChange%</span>
+                        }                                
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Expenditure This Month</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.MonthlyExpenses</span></h3>
+                        @if (Model.ExpenseChange >= 0)
+                        {
+                            <span class="label label-success row-stat-badge">+@Model.ExpenseChange%</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger row-stat-badge">-@Model.ExpenseChange%</span>
+                        }
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Total Users</p>
+                        <h3 class="row-stat-value"><span class="counter">@Model.UserCount</span></h3>
+                        @*<span class="label label-success row-stat-badge">+26%</span>*@
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="row-stat">
+                        <p class="row-stat-label">Overall Balance</p>
+                        <h3 class="row-stat-value">$<span class="counter">@Model.OverallBalance</span></h3>
+                        @*<span class="label label-danger row-stat-badge">+5%</span>*@
+                    </div> <!-- /.row-stat -->
+                </div> <!-- /.col -->
+
+            </div> <!-- /.row -->
+
+        </div> <!-- /.portlet-body -->
+
+    </div> <!-- /.portlet -->
+    <div id="ajaxLoader" style="display:none">
+        <img src="~/Images/hex-loader2.gif" />
+    </div>
+    <div class="row">
+
+        <div class="col-md-8">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Budget vs Actual Spending &nbsp;@System.DateTime.Today.Year
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+                    
+                    <div id="vertical-chart" class="chart-holder" onload=""></div><!-- /.bg-chart -->
+
+
+                    <br>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+        <div class="col-md-4">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Spending Breakdown
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    <div id="donut-chart" class="chart-holder" style="width: 70%;"></div>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+    </div> <!-- /.row -->
+
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        @DateTime.Today.ToString("MMMM") 's Budget
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    <div class="progress-plugin">
+
+                    </div>
+
+                    <br>
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+
+
+        <div class="col-md-6">
+
+            <div class="portlet portlet-default">
+
+                <div class="portlet-header">
+                    <h4 class="portlet-title">
+                        Recent Activities
+                    </h4>
+                </div> <!-- /.portlet-header -->
+
+                <div class="portlet-body">
+
+                    @Html.Action("RecentTransactions")
+
+                </div> <!-- /.portlet-body -->
+
+            </div> <!-- /.portlet -->
+
+        </div> <!-- /.col -->
+
+
+    </div> <!-- /.row -->
+
+
+
+</div> <!-- /.container -->
+
+@section page
+{
+    
+    <script>
+        $(document).ready(function () {
+            $('.counter').counterUp({
+                delay: 10,
+                time: 1000
+            })
+            $('#ajaxLoader').show();
+                //bar chart
+                $.ajax({
+                    url: '/Dashboard/ChartData/',
+                    dataType: "json",
+                    type: "GET",
+                    async: true,
+                    cache: false,
+                    success: function (data) {
+                        
+
+                        //BAR CHART
+                        var d1, d2, d3, d4, data, chartOptions;
+
+                        d1 = $.map(data.income, function (v, k) {
+                            return [[new Date(k).getTime(), v]];
+                        });
+
+                        d2 = $.map(data.expense, function (v, k) {
+                            return [[new Date(k).getTime(), v]];
+                        });
+
+                        d3 = $.map(data.budgetexpense, function (v, k) {
+                            return [[new Date(k).getTime(), v]];
+                        });
+
+                        d4 = $.map(data.budgetincome, function (v, k) {
+                            return [[new Date(k).getTime(), v]];
+                        });
+
+                      
+                        data = [{
+                            label: 'Income',
+                            data: d1,
+                            bars: {
+                                order: 0
+                            }
+                        }, {
+                            label: 'Budget Incomes',
+                            data: d4,
+                            bars: {
+                                order: 1
+                            }
+                        }, {
+                            label: 'Expenses',
+                            data: d2,
+                            bars: {
+                                order: 2
+                            }
+                        }, {
+                            label: 'Budget Expenses',
+                            data: d3,
+                            bars: {
+                                order: 3
+                            }
+                        }
+                        ];
+
+                        chartOptions = {
+                            xaxis: {
+                                min: (new Date(2014, 11, 15)).getTime(),
+                                max: (new Date(2015, 11, 15)).getTime(),
+                                mode: "time",
+                                tickSize: [1, "month"],
+                                monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                                tickLength: 0
+                            },
+                            grid: {
+                                hoverable: true,
+                                clickable: false,
+                                borderWidth: 0
+                            },
+                            bars: {
+                                show: true,
+                                barWidth: 12 * 24 * 60 * 60 * 300,
+                                fill: true,
+                                lineWidth: 1,
+                                lineWidth: 0,
+                                fillColor: { colors: [{ opacity: 1 }, { opacity: 1 }] }
+                            },
+
+                            tooltip: true,
+                            tooltipOpts: {
+                                content: '%s: %y'
+                            },
+                            colors: mvpready_core.layoutColors
+                        }
+
+
+                        var holder = $('#vertical-chart');
+
+                        if (holder.length) {
+                            $.plot(holder, data, chartOptions);
+                        }
+
+                        
+
+                        //LINE CHART
+                        var dat1, dat2, linedata, linechartOptions
+                        
+                        //dat1 = [
+                        //        [1418619600000, data.balances[0]], [1421298000000, data.balances[1]], [1423976400000, data.balances[2]], [1426392000000, data.balances[3]],
+                        //        [1429070400000, data.balances[4]], [1431662400000, data.balances[5]], [1434340800000, data.balances[6]], [1436932800000, data.balances[7]],
+                        //        [1439611200000, data.balances[8]], [1442289600000, data.balances[9]], [1444881600000, data.balances[10]], [1447563600000, data.balances[11]]
+                        //];
+                          
+                        //dat1 = $.map(data.b, function (v, k) {
+                        //    return [[new Date(k).getTime(), v]];
+                        //});
+
+                        linedata = [{
+                            label: "Balance",
+                            data: d1
+                        }, {
+                            label: "Income",
+                            data: d2
+                        }]
+
+                        linechartOptions = {
+                            xaxis: {
+                                min: (new Date(2014, 11, 15)).getTime(),
+                                max: (new Date(2015, 11, 15)).getTime(),
+                                mode: "time",
+                                tickSize: [1, "month"],
+                                monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                                tickLength: 0
+                            },
+                            yaxis: {
+
+                            },
+                            series: {
+                                lines: {
+                                    show: true,
+                                    fill: false,
+                                    lineWidth: 3
+                                },
+                                points: {
+                                    show: true,
+                                    radius: 3,
+                                    fill: true,
+                                    fillColor: "#ffffff",
+                                    lineWidth: 2
+                                }
+                            },
+                            grid: {
+                                hoverable: true,
+                                clickable: false,
+                                borderWidth: 0
+                            },
+                            legend: {
+                                show: true
+                            },
+                            tooltip: true,
+                            tooltipOpts: {
+                                content: '%s: %y'
+                            },
+                            colors: mvpready_core.layoutColors
+                        }
+
+                        var lineholder = $('#line-chart');
+                        
+                        if (lineholder.length) {
+                            
+                            $.plot(lineholder, linedata, linechartOptions);
+                            alert("I'm In");
+                        }
+                        
+                    },
+                    error: function (xhr) {
+                        alert("we're doomed barchart is broken")
+                        alert(xhr.statusText);
+                    }
+                });
+                
+            
+                //donut chart
+                $.ajax({
+                    url: '/Dashboard/fillmydonut/',
+                    dataType: "json",
+                    type: "GET",
+                    async: true,
+                    cache: false,
+                    success: function (data) {
+                        d1 = $.map(data, function (v, k) {
+                            return [{label: v.category, data: v.amount}];
+                        });
+                        var chartOptions;
+                        console.log(d1);
+                        chartOptions = {
+                            series: {
+                                pie: {
+                                    show: true,
+                                    innerRadius: .5,
+                                    stroke: {
+                                        width: 4
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'ne'
+                            },
+                            tooltip: true,
+                            tooltipOpts: {
+                                content: '%s, %p.0%'
+                            },
+                            grid: {
+                                hoverable: true
+                            },
+                            colors: mvpready_core.layoutColors
+                        };
+
+                        var donutholder = $('#donut-chart');
+                        if(donutholder.length)
+                        {
+                            $.plot(donutholder, d1, chartOptions);
+                        }
+
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.statusText);
+                    }
+                });
+
+            //line chart
+                $.ajax({
+                    type: 'GET',
+                    url: '/Dashboard/FillProgressBar/',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        d1 = $.map(data, function (v, k) {
+                            return { label: v.CategoryName, budget: v.BudgetPercent, actual: v.AmtPercent }
+                        });
+
+                        var colors = ["#e3ba0c", "#f04e4e", "#9fd5d0", "#fbe4b2"];
+                        var idx = 0;
+                        $.each(d1, function (e, i) {
+                            if (i.budget != 0)
+                            {
+                                if (idx > colors.length) {
+                                    idx = 0;
+                                }
+                                $('.progress-plugin').append(
+                                    '<p class="progressplugs">' + "<strong>" + i.label + "</strong>" + '<span class="pull-right">' + "$" + (i.budget - i.actual).toFixed(2) + " left" + '</span></p><div id="pb' + i.label + '"></div>');
+
+                                $('#pb' + i.label).jQMeter({
+                                    goal: Math.round(i.budget).toString(),
+                                    raised: Math.round(i.actual).toString(),
+                                    barColor: colors[idx]
+                                });
+                                idx++;
+
+                            }
+                            
+                        });
+                        $('#ajaxLoader').hide();
+                    },
+                    error: function (xhr) {
+                        alert(xhr.statusText);
+                    }
+                });
+
+                
+        
+        });
+    </script>
+    
+}
