@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Budgeteerv1.Models.Notification>
+
+<li class="dropdown navbar-notification">
+    <a href="./page-notifications.html" class="dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-bell navbar-notification-icon"></i>
+        <span class="visible-xs-inline">&nbsp;Notifications</span>
+        <b class="badge badge-primary">@Model.Count()</b>
+    </a>
+    <div class="dropdown-menu">
+        <div class="dropdown-header">&nbsp;Notifications</div>
+        <div class="notification-list">
+        @foreach (var note in Model)
+        {
+            <a href="./page-notifications.html" class="notification">
+                <span class="notification-icon"><i class="fa fa-share-square-o text-primary"></i></span>
+                <span class="notification-title">@note.Name</span>
+                <span class="notification-description">@note.Message</span>
+                <span class="notification-time">@note.Created</span>
+            </a> <!-- / .notification -->
+        }
+            
+            
+        </div> <!-- / .notification-list -->
+        
+    </div> <!-- / .dropdown-menu -->
+</li>

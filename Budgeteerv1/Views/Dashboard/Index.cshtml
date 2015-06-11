@@ -49,7 +49,7 @@
                     <i class="fa fa-book text-primary"></i> &nbsp;&nbsp;Budget
 
                     <i class="fa fa-chevron-right list-group-chevron"></i>
-                    <span class="badge bCount"></span>
+                    <span class="badge">@Model.HouseHold.Budgets.Count</span>
                 </a>
                               
                     <a href="#MembersModal" class="list-group-item" data-toggle="modal">
@@ -188,14 +188,22 @@
                                             <td>@note.Message</td>
                                             <td>@note.Created</td>
                                             <td>
-                                                @using (Html.BeginForm("Join", "HouseHold", new { noteId = note.NotificationId, householdId = note.HouseholdId}))
+                                                @if(note.Name == "Invite")
                                                 {
-                                                    @Html.AntiForgeryToken()       
-                                                                                                                                                                                                                                                                                                               
-                                                    <button type="submit" class="btn btn-primary"><i class="fa fa-user-plus"></i> &nbsp;Join</button>
-                                                    <br />                                                   
-                                                    <a href="@Url.Action("Decline", "HouseHold", new { noteId = note.NotificationId})" class="btn btn-warning"><i class="fa fa-user-times"></i> &nbsp;Decline</a>
-                                                }                                                 
+                                                    using (Html.BeginForm("Join", "HouseHold", new { noteId = note.NotificationId, householdId = note.HouseholdId }))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit" class="btn btn-primary"><i class="fa fa-user-plus"></i> &nbsp;Join</button>
+                                                        <br />
+                                                        <a href="@Url.Action("Decline", "HouseHold", new { noteId = note.NotificationId})" class="btn btn-warning"><i class="fa fa-user-times"></i> &nbsp;Decline</a>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("Decline", "HouseHold", new{noteId = note.NotificationId})" class ="btn btn-primary">Delete</a>
+                                                }
+                                                                                              
                                             </td>
                                         </tr>
                                     }
@@ -332,16 +340,16 @@
         }
 
         $(document).ready(function () {
-            $.ajax({
-                type: 'GET',
-                url: '/Dashboard/ItemCount',
-                dataType: 'json',
-                data: { householdId: $('#arbitrary-data').data('household-id') },
-                contentType: 'application/json',
-                success: function (data) {
-                    $('.bCount').html(data.BudgetCount);
-                }
-            });
+            //$.ajax({
+            //    type: 'GET',
+            //    url: '/Dashboard/ItemCount',
+            //    dataType: 'json',
+            //    data: { householdId: $('#arbitrary-data').data('household-id') },
+            //    contentType: 'application/json',
+            //    success: function (data) {
+            //        $('.bCount').html(data.BudgetCount);
+            //    }
+            //});
 
             $.ajax({
                 type: 'GET',
@@ -353,22 +361,27 @@
                         return { label: v.CategoryName, budget: v.BudgetPercent, actual: v.AmtPercent }
                     });
 
-                    var colors = ["#e3ba0c", "#f04e4e", "#9fd5d0", "#fbe4b2"];
+                    var colors = ["#e3ba0c", "#f04e4e", "#9fd5d0", "#fbe4b2", "#521515"];
                     var idx = 0;
                     $.each(d1, function (e, i) {
-                        if (idx > colors.length)
+                        if (i.budget != 0)
                         {
-                            idx = 0;
-                        }                        
-                        $('.progress-plugin').append(
-                            '<p class="progressplugs">' +"<strong>"+ i.label +"</strong>"+ '<span class="pull-right">' + "$" + (i.budget - i.actual).toFixed(2) + " left" + '</span></p><div id="pb' + i.label + '"></div>');
+                            if (idx > (colors.length - 1)) {
+                                idx = 0;
+                            }
+                            $('.progress-plugin').append(
+                                '<p class="progressplugs">' + "<strong>" + i.label + "</strong>" + '<span class="pull-right">' + "$" + (i.budget - i.actual).toFixed(2) + " left" + '</span></p><div id="pb' + i.label + '"></div>');
 
-                        $('#pb' + i.label).jQMeter({
-                            goal: Math.round(i.budget).toString(),
-                            raised: Math.round(i.actual).toString(),
-                            barColor: colors[idx]
-                        });
-                        idx++;
+                            $('#pb' + i.label).jQMeter({
+                                goal: Math.round(i.budget).toString(),
+                                raised: Math.round(i.actual).toString(),
+                                barColor: colors[idx]
+                            });
+                            console.log(idx);
+                            console.log(colors.length-1);
+                            idx++;
+                        }
+                        
 
                     });
                 },

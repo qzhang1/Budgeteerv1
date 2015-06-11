@@ -94,26 +94,28 @@ namespace Budgeteerv1.Controllers
             }
         }
 
-        // GET: Budget/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        
 
         // POST: Budget/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, int? hhId)
         {
-            try
+            using(db)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                
+                    // TODO: Add delete logic here
+                    var budgetItem = db.Budget.Find(id);
+                    if(budgetItem == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    db.Budget.Remove(budgetItem);
+                    db.SaveChanges();
+                    return RedirectToAction("Index", new { householdid = hhId});
+                
             }
-            catch
-            {
-                return View();
-            }
+            
         }
     }
 }

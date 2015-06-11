@@ -191,6 +191,7 @@
     <Compile Include="Models\HouseHold.cs" />
     <Compile Include="Models\HouseholdAccountViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LineChartViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\ProgressBarViewModel.cs" />
@@ -286,6 +287,7 @@
     <Content Include="Content\DataTables-1.10.7\extensions\TableTools\images\psd\collection.psd" />
     <Content Include="Content\DataTables-1.10.7\extensions\Responsive\css\dataTables.responsive.scss" />
     <None Include="Properties\PublishProfiles\qizhang-budgetready.pubxml" />
+    <Content Include="Images\hex-loader2.gif" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\js\dataTables.autoFill.js" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\js\dataTables.autoFill.min.js" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\Readme.txt" />
@@ -418,6 +420,8 @@
     <Content Include="Views\Dashboard\_BarChart.cshtml" />
     <Content Include="Views\Dashboard\_RecentTransactions.cshtml" />
     <Content Include="Views\Dashboard\ProgressBar.cshtml" />
+    <Content Include="Views\Dashboard\_ChangePassword.cshtml" />
+    <Content Include="Views\Shared\_DashNotification.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

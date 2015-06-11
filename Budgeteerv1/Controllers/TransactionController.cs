@@ -20,12 +20,16 @@ namespace Budgeteerv1.Controllers
         public ActionResult Index(int accountId)
         {
             var acct = db.Accounts.Find(accountId);
+            
+            
             var model = new TransactionViewModel
             {
                 AccountId = accountId,
                 Account = acct,
                 Transactions = acct.Transactions
             };
+                        
+            
             ViewBag.CategoryId = new SelectList(db.Categories.Where(a => a.HouseholdId == acct.HouseHoldId), "Id", "Name");
             return View(model);
         }
@@ -41,7 +45,7 @@ namespace Budgeteerv1.Controllers
                 if(ModelState.IsValid)
                 {
                     var account = db.Accounts.Find(accountId);
-
+                    var user = db.Users.Find(User.Identity.GetUserId());
                     //can be refactored to more efficient code with automapper
                     var transaction = new Transaction
                     {
@@ -62,6 +66,24 @@ namespace Budgeteerv1.Controllers
                     {
                         account.Balance -= transaction.Amount;
                     }
+
+
+                    if (account.Balance < 100 )
+                    {
+                        var note = new Notification
+                        {
+                            AccountName = account.Name,
+                            ReceiverId = user.Id,
+                            Created = System.DateTime.Now,
+                            Message = "The balance in account " + account.Name + " is low with an amount of " + account.Balance
+                            + " as of " + System.DateTime.Now,
+                            HouseholdId = account.HouseHoldId,
+                            Name = "Low Balance Alert"
+                        };
+                        db.Notifications.Add(note);
+                        db.SaveChanges();
+                    }
+
                     db.Transactions.Add(transaction);
                     account.Transactions.Add(transaction);
                     db.SaveChanges();

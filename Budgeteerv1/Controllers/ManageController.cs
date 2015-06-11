@@ -236,10 +236,11 @@ namespace Budgeteerv1.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
+                TempData["ChangedPasswordSuccess"] = "Your password has been changed";
+                
             }
             AddErrors(result);
-            return View(model);
+            return RedirectToAction("ProfileSettings", "Dashboard");
         }
 
         //

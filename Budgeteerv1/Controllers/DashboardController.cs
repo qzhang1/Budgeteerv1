@@ -51,6 +51,7 @@ namespace Budgeteerv1.Controllers
                                    select trans.Amount).DefaultIfEmpty().Sum(),
                             budgetamt = (from budget in household.Budgets
                                          where budget.CategoryId == category.Id
+                                         where budget.Amount != 0
                                          select budget.Amount/budget.Frequency).DefaultIfEmpty().Sum()
                         };
             var tmp = from a in stuff
@@ -75,6 +76,13 @@ namespace Budgeteerv1.Controllers
         }
 
 
+        public ActionResult DashNotification()
+        {
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            IEnumerable<Notification> notifications = db.Notifications.Where(h => h.HouseholdId == hhId).Take(5).ToList();
+            return PartialView("_DashNotification", notifications);
+        }
+
         [HttpGet]
         public JsonResult ItemCount(int householdId)
         {
@@ -96,6 +104,7 @@ namespace Budgeteerv1.Controllers
         {
             var userId = User.Identity.GetUserId();
             var model = db.Users.Find(userId);
+            ViewBag.ChangedPasswordSuccess = TempData["ChangedPasswordSuccess"];
             return View(model);
         }
 
@@ -154,29 +163,7 @@ namespace Budgeteerv1.Controllers
                         }
                     }
                 }
-                //var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
-                //ApplicationUser a = manager.FindById(User.Identity.GetUserId());
-
-                //try
-                //{
-                //    if(image != null)
-                //    {
-                //        a.ProfileUrl = model.ProfileUrl;
-                //    }
-                    
-                //    a.DisplayName = model.DisplayName;
-                //    manager.Update(a);
-                //}
-                //catch (DbEntityValidationException dbEx)
-                //{
-                //    foreach (var validationErrors in dbEx.EntityValidationErrors)
-                //    {
-                //        foreach (var validationError in validationErrors.ValidationErrors)
-                //        {
-                //            System.Console.WriteLine("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                //        }
-                //    }
-                //}
+                
             }
             return RedirectToAction("ProfileSettings");
         }
@@ -208,10 +195,7 @@ namespace Budgeteerv1.Controllers
 
             var household = db.HouseHolds.Find(hhId);
 
-            //var monthsToDate = Enumerable.Range(1, DateTime.Today.Month)
-            //                    .Select(m => new DateTime(DateTime.Today.Year, m, 1))
-            //                    .ToList();
-
+            
             var monthsToDate = Enumerable.Range(1, 12)
                                 .Select(m => new DateTime(DateTime.Today.Year, m, 1))
                                 .ToList();
@@ -242,40 +226,14 @@ namespace Budgeteerv1.Controllers
                                             select budget.Amount / budget.Frequency).DefaultIfEmpty().Sum()
                        };
 
-            decimal tmp = 0;
-
-            //var balances = from month in monthsToDate
-            //                from a in sums
-            //                select new
-            //                {
-            //                    Month = month,
-            //                    balance = (a.income - a.expense)
-            //                });
-            var balances = from month in monthsToDate
-                           select new {
-                               month = month,
-                               balance = (from a in sums
-                                         select (a.income - a.expense)).Sum()
-                           };
-
-
-            //var balances = (from a in sums
-            //               select (a.income - a.expense)).ToArray();
-
-            //for (int i = 0; i < balances.Count(); i++)
-            //{
-            //    balances[i] = balances[i] + tmp;
-            //    tmp = balances[i];
-            //}
             
-            
-
+                      
             var flotData = new {
                 income = sums.ToDictionary( k=> k.month, v=>v.income),
                 expense = sums.ToDictionary( k=> k.month, v=>v.expense),
                 budgetexpense = sums.ToDictionary( k=> k.month, v=>v.budgetexpense),
                 budgetincome = sums.ToDictionary( k=> k.month, v=>v.budgetincome),
-                b = balances.ToDictionary(k => k.month, v => v.balance)
+               
                 
             };
 
@@ -303,52 +261,11 @@ namespace Budgeteerv1.Controllers
             return Content(JsonConvert.SerializeObject(donutData), "application/json");
         }
 
-        //[HttpGet]
-        //public ActionResult drawmyline()
-        //{
-        //    //objective: find the balance at the end of each month and plot them as points in a line chart
-        //    //balance = income - expense for each acct for each month
-        //    //steps: find household generate month enumerable 
-        //    var hhId = Int32.Parse(User.Identity.GetHouseholdId());
-        //    var household = db.HouseHolds.Find(hhId);
 
-        //    var monthsToDate = Enumerable.Range(1, 12)
-        //                        .Select(m => new DateTime(DateTime.Today.Year, m, 1))
-        //                        .ToList();
-
-        //    var balances = from month in monthsToDate
-        //                   select new
-        //                   {
-        //                       income = (from account in household.Accounts
-        //                                 from transaction in account.Transactions
-        //                                 where transaction.Created.Month == month.Month
-        //                                 where transaction.IsIncome
-        //                                 select transaction.Amount).DefaultIfEmpty().Sum(),
-
-        //                       expense = (from account in household.Accounts
-        //                                  from transaction in account.Transactions
-        //                                  where transaction.Created.Month == month.Month
-        //                                  where !transaction.IsIncome
-        //                                  select transaction.Amount).DefaultIfEmpty().Sum(),
-
-        //                       //balance = (from account in household.Accounts
-        //                       //           from transaction in account.Transactions
-        //                       //           where transaction.Created.Month == month.Month
-        //                       //           where transaction.IsIncome
-        //                       //           select transaction.Amount).DefaultIfEmpty().Sum() -
-        //                       //           (from account in household.Accounts
-        //                       //            from transaction in account.Transactions
-        //                       //            where transaction.Created.Month == month.Month
-        //                       //            where !transaction.IsIncome
-        //                       //            select transaction.Amount).DefaultIfEmpty().Sum()
-
-        //                   };
-
-        //    var x = 1;
-        //    return View();
-
-        //}
-
+        public ActionResult ChangePassword()
+        {
+            return PartialView("_ChangePassword");
+        }
 
         public ActionResult RecentTransactions()
         {
