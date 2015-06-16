@@ -1,4 +1,5 @@
 ﻿@using Budgeteerv1.Models
+@using Microsoft.Owin.Security
 @model LoginViewModel
 @{
     ViewBag.Title = "Log in";
@@ -25,21 +26,38 @@
                 <h3>Welcome back to MVP Ready.</h3>
                 <h5>Please sign in to get access.</h5>
                 <br>
-                @*<div class="row">
-                    <div class="col-sm-6">
-                        <a href="javascript:;" class="btn btn-twitter btn-block">
-                            <i class="fa fa-twitter"></i>
-                            &nbsp;&nbsp;Login with Twitter
-                        </a>
-                    </div> <!-- /.col -->
-                    <div class="col-sm-6">
-                        <a href="javascript:;" class="btn btn-facebook btn-block">
-                            <i class="fa fa-facebook"></i>
-                            &nbsp;&nbsp;Login with Facebook
-                        </a>
-                    </div> <!-- /.col -->
-                </div> <!-- /.row -->
-                <span class="account-or-social text-muted">OR, SIGN IN BELOW</span>*@
+                <div class="row">                                         
+                    @{
+                        var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+                        if (loginProviders.Count() == 0)
+                        {
+                            <div>
+                                <p>
+                                    There are no external authentication services configured. See <a href="http://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                                    for details on setting up this ASP.NET application to support logging in via external services.
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            
+                            using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = ViewBag.ReturnUrl }))
+                            {
+                                @Html.AntiForgeryToken()
+                                foreach (AuthenticationDescription p in loginProviders)
+                                {
+                                    <div class="col-sm-6">
+
+                                        <button type="submit" class="btn @if(p.Caption == "Google"){ <text>btn-danger btn-block</text> }else{ <text>btn-facebook btn-block</text> }" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"><i class="fa @if(p.Caption == "Google"){ <text>fa-google-plus</text> }else{ <text>fa-facebook</text> }"></i> &nbsp; Log in with @p.AuthenticationType</button>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                    
+
+                        </div> <!-- /.row -->
+                <span class="account-or-social text-muted">OR, SIGN IN BELOW</span>
 
                 @using (Html.BeginForm("Login","Account", new{ReturnUrl = ViewBag.ReturnUrl}, FormMethod.Post, new{ @class="form account-form"}))
                 {

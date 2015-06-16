@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Budgeteerv1.Controllers
 {
+    [RequireHttps]
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -22,8 +23,7 @@ namespace Budgeteerv1.Controllers
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
-
+           
             return View();
         }
     }

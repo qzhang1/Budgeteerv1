@@ -52,17 +52,17 @@ namespace Budgeteerv1
 
             //app.UseTwitterAuthentication(
             //   consumerKey: "",
-            //   consumerSecret: "");
+            //   consumerSecret: "");            
 
-            //app.UseFacebookAuthentication(
-            //   appId: "371514743047536",
-            //   appSecret: "8f0b0c331fea0cf585e0ee8c63be06dd");
+            app.UseFacebookAuthentication(
+               appId: "1585917001630856",
+               appSecret: "280311793a2027ca04ff82953d37c05b");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "657374877858-hk0dlpdc0am6p1td563g3ctvvdmndg3o.apps.googleusercontent.com",
+                ClientSecret = "LFZbe4yr-x8j303FzRWL3n8B",
+            });
         }
     }
 }
