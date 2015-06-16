@@ -1,0 +1,140 @@
+﻿@using Microsoft.AspNet.Identity
+@model Budgeteerv1.Models.ApplicationUser
+@{
+    ViewBag.Title = "Landing";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 col-sm-5">
+            <!--Profile picture-->
+            <div class="profile-avatar">
+                <a href="#" title="Edit Profile Picture">                   
+                        <img src="@Model.ProfileUrl" class="profile-avatar-img img-responsive thumbnail" alt="Profile Image">
+                </a>
+            </div> <!-- /.profile-avatar -->
+
+            <!--side navigation-->
+            <div class="list-group">
+                <a href="#NotificationTable" class="list-group-item" data-toggle="modal">
+                    <i class="fa fa-bell text-primary"></i> &nbsp;&nbsp;Notifications
+
+                    <i class="fa fa-chevron-right list-group-chevron"></i>
+                    <span class="badge">@Model.Notifications.Count</span>
+                </a>
+            </div> <!-- /.side navigation-->
+
+            <!--Notification Modal table-->
+            <div id="NotificationTable" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h2 class="modal-title">Notifications</h2>
+                        </div>
+
+                        <div class="modal-body">
+                            <table class="table" style="overflow:scroll;">
+                                <thead>
+                                    <tr>
+                                        <th>Notification</th>
+                                        <th>Message</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var note in Model.Notifications)
+                                    {
+                                        <tr>
+                                            <td>@note.Name</td>
+                                            <td>@note.Message</td>
+                                            <td>@note.Created</td>
+                                            <td>
+                                                @if (note.Name == "Invite")
+                                                {
+                                                    using (Html.BeginForm("Join", "HouseHold", new { noteId = note.NotificationId, householdId = note.HouseholdId }))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+
+                                                        <button type="submit" class="btn btn-primary"><i class="fa fa-user-plus"></i> &nbsp;Join</button>
+                                                        <br />
+                                                        <a href="@Url.Action("Decline", "HouseHold", new { noteId = note.NotificationId})" class="btn btn-warning"><i class="fa fa-user-times"></i> &nbsp;Decline</a>
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("Decline", "HouseHold", new{noteId = note.NotificationId})" class="btn btn-primary">Delete</a>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-facebook" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div> <!-- /. Notification Table-->
+           
+        </div>
+
+        <div class="col-md-6 col-sm-7">
+            <br class="visible-xs" />
+
+            <!--Create or Join Household-->            
+            <hr />
+            <p>
+                <a href="#" class="btn btn-primary" data-target="#createHousehold" data-toggle="modal">Create Household</a>
+                <div class="modal fade" id="createHousehold" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Edit Account Name &nbsp; <span class="fa fa-pencil fa-2x"></span></h4>
+                            </div>
+                            @using (Html.BeginForm("Create", "HouseHold"))
+                            {
+                                @Html.AntiForgeryToken()                                
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        Household Name:
+                                        <input type="text" name="hhName" class="form-control" placeholder="Household Name" />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </p>
+            <hr />
+
+            <!--User description and info-->
+            <ul class="icons-list">
+                <li><i class="icon-li fa fa-envelope"></i> @User.Identity.GetUserName()</li>
+                <li><i class="icon-li fa fa-globe"></i> qizhang.azurewebsites.net</li>
+                <!--maybe use geolocation for each user-->
+                <li><i class="icon-li fa fa-map-marker"></i> Las Vegas, NV</li>
+            </ul>
+            <br>
+            <p>
+                @Model.Description
+            </p>
+            <hr>
+
+
+        </div>
+
+    </div>
+</div>

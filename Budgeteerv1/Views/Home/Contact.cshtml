@@ -3,6 +3,11 @@
     Layout = "/Views/Shared/_LandingLayout.cshtml";
 }
 
+@section css
+{
+    <link rel="stylesheet" type="text/css" href="/Content/jquery.realperson.css" />
+}
+
 <div class="masthead">
 
     <div class="container">
@@ -50,6 +55,9 @@
                             <textarea class="form-control" id="text" name="text" rows="6" cols="40"></textarea>
                         </div>
                     </div>
+
+                    <div id="captcha"></div>
+
                     <div class="form-group">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <button class="btn btn-primary" type="submit">Send Message</button>
@@ -102,3 +110,15 @@
         </div> <!-- /.row -->
     </div> <!-- /.container -->
 </div> <!-- /.content -->
+
+@section page
+{
+    <script type="text/javascript" src="~/Scripts/jquery.plugin.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.realperson.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#captcha').realperson();
+        })
+        
+    </script>
+}

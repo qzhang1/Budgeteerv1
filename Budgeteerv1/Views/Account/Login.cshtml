@@ -25,7 +25,7 @@
                 <h3>Welcome back to MVP Ready.</h3>
                 <h5>Please sign in to get access.</h5>
                 <br>
-                <div class="row">
+                @*<div class="row">
                     <div class="col-sm-6">
                         <a href="javascript:;" class="btn btn-twitter btn-block">
                             <i class="fa fa-twitter"></i>
@@ -39,7 +39,7 @@
                         </a>
                     </div> <!-- /.col -->
                 </div> <!-- /.row -->
-                <span class="account-or-social text-muted">OR, SIGN IN BELOW</span>
+                <span class="account-or-social text-muted">OR, SIGN IN BELOW</span>*@
 
                 @using (Html.BeginForm("Login","Account", new{ReturnUrl = ViewBag.ReturnUrl}, FormMethod.Post, new{ @class="form account-form"}))
                 {
@@ -68,6 +68,7 @@
                     </div> <!-- /.form-group -->
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block btn-lg" tabindex="4" value="Log in">Signin &nbsp; <i class="fa fa-play-circle"></i></button>
+                        <a href="@Url.Action("GuessLogin","Account")" class="btn btn-facebook btn-block btn-lg" >Demo Log in <i class="fa fa-sign-in"></i></a>
                     </div> <!-- /.form-group -->
                 }
 

@@ -21,7 +21,7 @@ namespace Budgeteerv1.Migrations
             var UserManager = new UserManager<ApplicationUser>(
                 new UserStore<ApplicationUser>(context));
 
-            ApplicationUser User0;
+            ApplicationUser User0, guess;
             if(!context.Users.Any(r => r.Email == "qzhang112@gmail.com"))
             {
                 User0 = new ApplicationUser
@@ -37,7 +37,22 @@ namespace Budgeteerv1.Migrations
                 User0 = context.Users.Single(u => u.Email == "qzhang112@gmail.com");
             }            
 
-
+            if(!context.Users.Any(r => r.Email == "demoguess@gmail.com"))
+            {
+                guess = new ApplicationUser
+                {
+                    UserName = "demoguess@gmail.com",
+                    Email = "demoguess@gmail.com",
+                    DisplayName = "Demo Guess",
+                    HouseHoldId = 11,
+                    ProfileUrl = "/Images/person-placeholder.jpg"
+                };
+                UserManager.Create(guess, "Password-1");
+            }
+            else
+            {
+                guess = context.Users.Single(u => u.Email == "demoguess@gmail.com");
+            }
         }
     }
 }

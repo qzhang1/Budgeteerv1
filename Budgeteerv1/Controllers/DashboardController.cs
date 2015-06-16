@@ -13,6 +13,7 @@ using System.Data.Entity.Validation;
 using System.Data.Entity;
 using Budgeteerv1.Models.extensions;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Budgeteerv1.Controllers
 {
@@ -30,6 +31,10 @@ namespace Budgeteerv1.Controllers
             var userId = User.Identity.GetUserId();
             var model = db.Users.Find(userId);            
             model.Notifications = db.Notifications.Where(a => a.ReceiverId == userId).ToList();
+            if(model.HouseHoldId == null)
+            {
+                return View("Landing", model);
+            }
             return View(model);
         }
 
@@ -78,8 +83,9 @@ namespace Budgeteerv1.Controllers
 
         public ActionResult DashNotification()
         {
-            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
-            IEnumerable<Notification> notifications = db.Notifications.Where(h => h.HouseholdId == hhId).Take(5).ToList();
+            //var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var userid = User.Identity.GetUserId();
+            IEnumerable<Notification> notifications = db.Notifications.Where(h => h.ReceiverId == userid).Take(5).ToList();
             return PartialView("_DashNotification", notifications);
         }
 
@@ -172,12 +178,7 @@ namespace Budgeteerv1.Controllers
         {
             return PartialView("_ProfileImage",db.Users.Find(User.Identity.GetUserId()));
         }
-
-
-        /*
-         *      Dashboard Data Charts
-         * 
-         * */
+     
         //Index
         public ActionResult DataCharts()
         {
@@ -221,7 +222,7 @@ namespace Budgeteerv1.Controllers
                                      select budget.Amount/budget.Frequency).DefaultIfEmpty().Sum(),
 
                            budgetincome = (from budget in household.Budgets
-                                            where budget.Created.Month <= month.Month && (budget.Created.Month + budget.Frequency) >= month.Month
+                                            where budget.Created.Month <= month.Month && (budget.Created.Month + budget.Frequency) > month.Month
                                             where budget.IsIncome
                                             select budget.Amount / budget.Frequency).DefaultIfEmpty().Sum()
                        };
@@ -269,7 +270,9 @@ namespace Budgeteerv1.Controllers
 
         public ActionResult RecentTransactions()
         {
-            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var userId = (User.Identity.GetUserId());
+            var hhId = db.Users.FirstOrDefault(u => u.Id == userId).HouseHoldId;
+
             var household = db.HouseHolds.Find(hhId);
 
             var RecentTrans = (from account in household.Accounts
@@ -286,6 +289,15 @@ namespace Budgeteerv1.Controllers
             };
 
             return PartialView("_RecentTransactions", model);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Budgeteerv1.Models;
 using Budgeteerv1.Models.CustomAttributes;
+using Budgeteerv1.Models.extensions;
 using Microsoft.AspNet.Identity;
 using System.Data.Entity.Infrastructure;
 using System.Net;
@@ -16,11 +17,19 @@ namespace Budgeteerv1.Controllers
     public class TransactionController : Controller
     {
         ApplicationDbContext db = new ApplicationDbContext();
-        // GET: Transaction
+        // GET: Transactions
+        // gethousehold see if account via accountId is in household if so then create 
+        // transaction viewmodel else http 404
         public ActionResult Index(int accountId)
         {
-            var acct = db.Accounts.Find(accountId);
+            var hhId = Int32.Parse(User.Identity.GetHouseholdId());
+            var hh = db.HouseHolds.Find(hhId);
+            var acct = hh.Accounts.FirstOrDefault(a => a.Id == accountId);
             
+            if(acct == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             
             var model = new TransactionViewModel
             {
@@ -162,8 +171,6 @@ namespace Budgeteerv1.Controllers
         }
         
 
-       
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int accountId, int TransId)
@@ -189,6 +196,16 @@ namespace Budgeteerv1.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index", new { accountId = accountId });
             }
+        }
+
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.db.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         //[HttpPost]

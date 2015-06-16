@@ -4,14 +4,17 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Budgeteerv1.Models;
+using Microsoft.AspNet.Identity;
+using Budgeteerv1.Models.extensions;
 namespace Budgeteerv1.Controllers
 {
     public class BudgetController : Controller
     {
         ApplicationDbContext db = new ApplicationDbContext();
         // GET: Budget
-        public ActionResult Index(int householdid)
+        public ActionResult Index()
         {
+            var householdid = Int32.Parse(User.Identity.GetHouseholdId());
             var bi = db.Budget.Where(u => u.HouseHoldId == householdid);
             var model = new BudgetViewModel
             {
@@ -21,12 +24,6 @@ namespace Budgeteerv1.Controllers
             };
             ViewBag.CategoryId = new SelectList(db.Categories.Where(a => a.HouseholdId == householdid), "Id", "Name");
             return View(model);
-        }
-
-        // GET: Budget/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
         }
 
        
@@ -72,11 +69,6 @@ namespace Budgeteerv1.Controllers
             return RedirectToAction("Index", new { householdid = hhId });
         }
 
-        // GET: Budget/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
 
         // POST: Budget/Edit/5
         [HttpPost]
@@ -117,5 +109,27 @@ namespace Budgeteerv1.Controllers
             }
             
         }
+
+
+        //held for later
+        //[HttpGet]
+        //public JsonResult PopulateEditForm(int budgetid)
+        //{
+        //    var budget = db.Budget.Find(budgetid);
+        //    var categories = db.HouseHolds.Find(budget.HouseHoldId).Categories.ToList();
+        //    ViewBag.EditBudgetCategory = new SelectList(categories, "Id", "Name", budget.CategoryId);
+        //    return Json(new { IsIncome = budget.IsIncome, Description = budget.Description,
+        //    Amount = budget.Amount, Frequency = budget.Frequency }, JsonRequestBehavior.AllowGet);
+        //}
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                this.db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
     }
 }

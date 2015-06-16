@@ -91,6 +91,26 @@ namespace Budgeteerv1.Controllers
             }
         }
 
+
+        [AllowAnonymous]
+        public ActionResult GuessLogin()
+        {
+            LoginViewModel model = new LoginViewModel();
+            model.Email = "demoguess@gmail.com";
+            model.Password = "Password-1";
+            model.RememberMe = true;
+            var result = SignInManager.PasswordSignIn(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    return RedirectToAction("Index", "Home");
+                case SignInStatus.Failure:
+                default:
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View(model);
+            }
+        }
+
         //
         // GET: /Account/VerifyCode
         [AllowAnonymous]
@@ -151,7 +171,7 @@ namespace Budgeteerv1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, DisplayName = model.DisplayName };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, DisplayName = model.DisplayName, ProfileUrl = "/Images/person-placeholder.jpg", Description = "Welcome to BudgetReady, to change the current user settings click setting" };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

@@ -21,11 +21,17 @@ namespace Budgeteerv1.Models.helper
             decimal IncomeChange = 0;
             decimal ExpenseChange = 0;
             
-            //find all the accounts in hh
+            //find all the accounts in hh. if it's a new household with no accounts then return 0
             var hh = db.HouseHolds.Find(hhId);
+            if(hh.Accounts.Count == 0)
+            {
+                return new ChartViewModel { UserCount = 0, MonthlyExpenses = 0, MonthlyIncome = 0, IncomeChange = 0, OverallBalance = 0, ExpenseChange = 0 };
+            }
+
+
             var accts = hh.Accounts.ToList();
             int usercount = hh.Users.Count;
-            var tmp = accts[1].Transactions.Where(i => i.IsIncome == false).Sum(a => a.Amount);
+            //var tmp = accts[1].Transactions.Where(i => i.IsIncome == false).Sum(a => a.Amount);
             //error: currently calculating all income and expense transactions not just the ones for the current month
             foreach(var a in accts)
             {
@@ -43,10 +49,6 @@ namespace Budgeteerv1.Models.helper
                 ExpenseChange =(int)ExpenseChange, IncomeChange=(int)IncomeChange };
 
         }
-
-        //public decimal[] AnnualBudget()
-        //{
-
-        //}
+       
     }
 }

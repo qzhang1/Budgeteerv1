@@ -19,34 +19,18 @@ namespace Budgeteerv1.Controllers
     {
         ApplicationDbContext db = new ApplicationDbContext();
         householdHelpers helper = new householdHelpers();
-
-        // GET: HouseHold
-        public ActionResult Index(int id)
-        {
-            return View();
-        }
-
-        // GET: HouseHold/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: HouseHold/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        
 
         // POST: HouseHold/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Create(HouseHold model)
+        public ActionResult Create(HouseHold model, string hhName)
         {
             if(ModelState.IsValid)
             {
                 //if current user creates a household let them automatically join the household
+                model.Name = hhName;
                 var userId = User.Identity.GetUserId();
                 model.Users.Add(db.Users.Find(userId));                
                 model.IsDeleted = false;
@@ -171,48 +155,13 @@ namespace Budgeteerv1.Controllers
             return RedirectToAction("Index","Dashboard");
         }
 
-        // GET: HouseHold/Edit/5
-        public ActionResult Edit(int id)
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        // POST: HouseHold/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                this.db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: HouseHold/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: HouseHold/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }

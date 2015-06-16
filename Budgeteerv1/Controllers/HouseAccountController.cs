@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Budgeteerv1.Models;
 using Budgeteerv1.Models.CustomAttributes;
+using Budgeteerv1.Models.extensions;
 using Microsoft.AspNet.Identity;
 using System.Net;
 
@@ -16,8 +17,9 @@ namespace Budgeteerv1.Controllers
         ApplicationDbContext db = new ApplicationDbContext();
         
         // GET: HouseAccount
-        public ActionResult Index(int householdid)
+        public ActionResult Index()
         {
+            var householdid = Int32.Parse(User.Identity.GetHouseholdId());
             if(householdid == 0)
             {
                 return RedirectToAction("Index", "Dashboard");
@@ -109,6 +111,13 @@ namespace Budgeteerv1.Controllers
             return RedirectToAction("Index","HouseAccount", new { householdid = householdid});
         }
 
-
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
